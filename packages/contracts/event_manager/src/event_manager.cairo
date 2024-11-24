@@ -41,9 +41,10 @@ trait IRegistration<T> {
 
     /// Gets the information of an event. Time will be 0 if the event does not exist.
     fn event_info(self: @T, event_id: felt252) -> EventInfo;
-    /// Gets the information of a range of events. The range is [start, end).
-    fn events_infos(self: @T, start: usize, end: usize) -> Array<EventInfo>;
-
+    /// Gets the information of a range of events by their IDs. The range is [start, end).
+    fn events_infos_by_id(self: @T, start: usize, end: usize) -> Array<EventInfo>;
+    /// Gets the information of a range of events by their times. The range is [start, end).
+    fn events_infos_by_time(self: @T, start: Time, end: Time) -> Array<EventInfo>;
     /// Registers a user to an event. The user id is the caller address of the transaction.
     fn register(ref self: T, event_id: felt252);
     /// Unregisters a user from an event. The user id is the caller address of the transaction.
@@ -68,6 +69,8 @@ trait IRegistration<T> {
 
 #[starknet::contract]
 mod registration {
+    use starknet::storage::VecTrait;
+    use starknet::storage::MutableVecTrait;
     use crate::utils::time::{Time, TimeTrait};
     use starknet::storage::StorageAsPointer;
     use starknet::storage::StoragePathEntry;
@@ -77,7 +80,7 @@ mod registration {
     use starknet::storage::StorageMapWriteAccess;
     use super::{EventInfo, EventUserInfo};
     use starknet::ContractAddress;
-    use starknet::storage::Map;
+    use starknet::storage::{Map, Vec};
 
     #[storage]
     struct Storage {
@@ -85,6 +88,9 @@ mod registration {
         events: Map<felt252, EventInfo>,
         /// A map from event ID to whether the event has been canceled.
         event_canceled: Map<felt252, bool>,
+        /// A simple data structure to allow lookup of events by time. The key is the day of the
+        /// event, and the value is a vector of event IDs.
+        events_by_day: Map<u64, Vec<felt252>>,
         /// The number of events in the contract.
         n_events: usize,
         /// A map from user to their token balance.
@@ -148,8 +154,11 @@ mod registration {
             let n_events_ptr = self.n_events.as_ptr();
             let n_events = n_events_ptr.read();
             let time = TimeTrait::new(time.try_into().expect('Invalid time'));
+            let event_id = n_events + 1;
+            let event_day = time.day();
             self.events.write(n_events.into(), EventInfo { time, price });
-            n_events_ptr.write(n_events + 1);
+            n_events_ptr.write(event_id);
+            self.events_by_day.entry(event_day).append().write(event_id.into());
 
             self.emit(EventChanged { event_id: n_events.into(), time });
         }
@@ -246,11 +255,33 @@ mod registration {
             self.events.read(event_id)
         }
 
-        fn events_infos(self: @ContractState, start: usize, end: usize) -> Array<EventInfo> {
+        fn events_infos_by_id(self: @ContractState, start: usize, end: usize) -> Array<EventInfo> {
             let mut events = ArrayTrait::new();
             for i in start..end {
                 events.append(self.events.read(i.into()));
             };
+            events
+        }
+
+        fn events_infos_by_time(self: @ContractState, start: Time, end: Time) -> Array<EventInfo> {
+            let mut events = ArrayTrait::new();
+            let start_day = start.day();
+            let end_day = end.day();
+            // TODO: Add get_events_of_day, and check for time limits only in the first and last
+            // day.
+            for day in start_day
+                ..end_day {
+                    let cur_day_events = self.events_by_day.entry(day);
+                    let n_events_in_day = cur_day_events.len();
+                    for i in 0
+                        ..n_events_in_day {
+                            let event_id = cur_day_events.at(i).read();
+                            let event = self.events.read(event_id);
+                            if event.time >= start && event.time < end {
+                                events.append(event);
+                            }
+                        }
+                };
             events
         }
 
