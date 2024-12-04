@@ -23,9 +23,9 @@ export const StatsTab = ({
   const [selectedDate, setSelectedDate] = useState<string>(`${currentYear}-${currentMonth}`);
   const mealsGroupedByMonth = useMemo(() => groupMealsByMonth((meals.filter(({info: {registered}}) => registered))), [meals]);
   const monthlyStats = useMonthlyStats({mealsGroupedByMonth});
-  
+
   const selectedMonthStats = monthlyStats.find(stat => stat.month === selectedDate);
-  
+
   const mealCount = Object.values(selectedMonthStats?.mealsByDay ?? {}).reduce((mealsCount, acc) => mealsCount + acc, 0);
 
   return (
@@ -45,23 +45,22 @@ export const StatsTab = ({
           </SelectContent>
         </Select>
       </div>
-      
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {mealCount === 0 ? (
-              <EmptyStatsCard setActiveTab={setActiveTab} />
-            ) : (
-              <div>
-                <h3 className="text-xl font-semibold mb-4">Past Meals</h3>
-                <div className="space-y-4">
-                  {(mealsGroupedByMonth[selectedDate] ?? []).map((meal) => (
-                      <MealCard isWalletConnected key={meal.id} meal={meal} isPastMeal  />
-                    )
-                  )}
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {mealCount === 0 ? (
+            <EmptyStatsCard setActiveTab={setActiveTab} />
+          ) : (
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Past Meals</h3>
+              <div className="space-y-4">
+                {(mealsGroupedByMonth[selectedDate] ?? []).map((meal) => (
+                    <MealCard isWalletConnected key={meal.id} meal={meal} isPastMeal  />
+                  )
+                )}
               </div>
-            )}
-            <StatsCard allTimeMealCount={allTimeMealCount} foodieRank={foodieRank} stats={selectedMonthStats} />
-        </div>
+            </div>
+          )}
+          <StatsCard allTimeMealCount={allTimeMealCount} foodieRank={foodieRank} stats={selectedMonthStats} />
+      </div>
     </>
   )
 }
