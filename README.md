@@ -66,7 +66,7 @@ Follow these steps to get started with the monorepo and set up your project:
 3. **Explore Other Scripts**
    - Check the `package.json` file for other available scripts and explore their functionality.
 
-4. **Check your deployed up**
+4. **Check your deployed app**
   - You can see your app live on {your-github-username}.github.io/{repo-name} for example: gilbens-starkware.github.io/catering-app
 ---
 
