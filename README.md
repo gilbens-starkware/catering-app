@@ -25,23 +25,26 @@ Follow these steps to get started with the monorepo and set up your project:
      cd <path-to-monorepo-root>
      ```
 
-6. **Update Application Name**
-   - Replace all occurrences of `"catering-app"` in the repository with your desired application name. This may include package names, configurations, or deployment references.
+6. **Add Env Variables**
+   - Add env variable files - `".env.development"` and `".env.production"` under your-app-name/apps/app-name aka - frontend package root folder (ask Itay/Liad/Gil for variable values)
 
-7. **Install Dependencies**
+7. **Update Application Name**
+   - Replace all occurrences of `"catering-app"` and `"starkitchen"` in the repository with your desired application name. This may include package names, configurations, or deployment references.
+
+8. **Install Dependencies**
    - Run the following command to install all dependencies:
      ```bash
      pnpm i
      ```
 
-8. **Customize Functionality**
+9. **Customize Functionality**
    - Navigate to the `apps/starkitchen` folder:
      ```bash
      cd apps/starkitchen
      ```
    - Start adding or removing functionality to tailor it to your app's requirements. **Important:** Do not delete the `components/ui` folder, as it contains essential UI components.
 
-9. **Run the App**
+10. **Run the App**
    - Start the app using one of the following commands:
      - From the `apps/starkitchen` directory:
        ```bash
