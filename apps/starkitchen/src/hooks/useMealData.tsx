@@ -1,60 +1,63 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Meal } from "../types/meal";
 import { getStartMonthOfEventTracking, getTimestampForFirstDayOfMonth } from "../utils/date";
-import { useStarknetWallet, useWalletEvents } from "@catering-app/starknet-contract-connect";
-import { useCateringContract } from "./useCateringContract";
+import { useAccount, useReadContract } from "@starknet-react/core";
+import { ABI, CONTRACT_ADDRESS } from "@/utils/consts";
+
+const aYearAgoTimestampSeconds = getTimestampForFirstDayOfMonth(getStartMonthOfEventTracking());
+const aMonthFromNowTimestampSeconds = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
 
 export const useMealData = () => {
-  const [mealEvents, setMealEvents] = useState<Meal[]>([]);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isAllowedUser, setIsAllowedUser] = useState<boolean>();
   const [loadingAllEvents, setLoadingAllEvents] = useState(true);
   const [isSuccessFetchingUserEvents, setSuccessFetchingUserEvents] = useState(false);
-  const [foodieRank, setFoodieRank] = useState<number>();
-  const [allTimeMealCount, setAllTimeMealCount] = useState<number>();
-  const cateringContract = useCateringContract();
+  const {address, isConnecting} = useAccount();
+  const {data: isAdmin, refetch: getIsAdmin,} = useReadContract({ functionName: 'is_admin', enabled: false, abi: ABI, address: CONTRACT_ADDRESS, args: [address] });
+  const {data: isAllowedUser, refetch: getIsAllowedUser} = useReadContract({ functionName: 'is_allowed_user', enabled: false, abi: ABI, address: CONTRACT_ADDRESS, args: [address] });
+  const {data: allTimeReportResponse, refetch: getParticipationReportByTime } = useReadContract({ enabled: false, functionName: 'get_participation_report_by_time', abi: ABI, address: CONTRACT_ADDRESS, args: [{seconds: 0}, {seconds: Math.floor(Date.now() / 1000)}] });
+  const {data: rawMealEvents, refetch: getEventsInfosByTime} = useReadContract({ functionName: 'get_events_infos_by_time', enabled: false, abi: ABI, address: CONTRACT_ADDRESS, args: [{seconds: aYearAgoTimestampSeconds}, { seconds: aMonthFromNowTimestampSeconds }] });
+  const {data: rawUserMealParticipations, refetch: getUserEventsByTime} = useReadContract({ functionName: 'get_user_events_by_time', enabled: false, abi: ABI, address: CONTRACT_ADDRESS, args: [address, {seconds: aYearAgoTimestampSeconds},{ seconds: aMonthFromNowTimestampSeconds }] });
+  const [userMealParticipations, setUserMealParticipations] = useState<Meal[]>([]);
+  const [mealEvents, setMealEvents] = useState<Meal[]>([]);
 
-  const starknetWallet = useStarknetWallet();
-  const {isFullyLoaded} = useWalletEvents();
+  useEffect(() => setMealEvents(rawMealEvents), [rawMealEvents]);
+  useEffect(() => setUserMealParticipations(rawUserMealParticipations), [rawUserMealParticipations]);
 
-  const updateMeal = useCallback((mealId: string) => {
-    const indexOfUpdatedMeal = mealEvents.map((meal) => meal.id).indexOf(mealId);
-    const oldMeal = mealEvents[indexOfUpdatedMeal];
+  const {foodieRank, allTimeMealCount} = address ? extractGlobalStatsFromReport(allTimeReportResponse ?? [], address) : { foodieRank: 0, allTimeMealCount: 0};
+  
+  const enhancedMealEvents = useMemo(() => addUserParticipationToMealEvents(mealEvents, userMealParticipations), [mealEvents, userMealParticipations])
+
+  const updateMeal = useCallback(async (mealId: string) => {
+    const indexOfUpdatedMeal = enhancedMealEvents.map((meal) => meal.id).indexOf(mealId);
+    const oldMeal = enhancedMealEvents[indexOfUpdatedMeal];
     
-    const oldParticipantCount = Number(oldMeal.info.registered);
+    const oldParticipantCount = Number(oldMeal.info.number_of_participants);
+    const isUnregistering = oldMeal.info.registered;
     const newMeal: Meal = {
       ...oldMeal,
       info: {
         ...oldMeal.info,
         registered: !oldMeal.info.registered,
-        number_of_participants: oldMeal.info.registered ? Number(oldParticipantCount) - 1 : Number(oldParticipantCount) - 1,
+        number_of_participants: isUnregistering ? oldParticipantCount - 1 : oldParticipantCount + 1,
       }
     }
-
-    setMealEvents([...mealEvents.slice(0, indexOfUpdatedMeal), { ...newMeal }, ...mealEvents.slice(indexOfUpdatedMeal + 1)]);
-  }, [mealEvents]);
-
+    
+    await getParticipationReportByTime();
+    setUserMealParticipations([...enhancedMealEvents.slice(0, indexOfUpdatedMeal), { ...newMeal }, ...enhancedMealEvents.slice(indexOfUpdatedMeal + 1)]);
+    setMealEvents([...enhancedMealEvents.slice(0, indexOfUpdatedMeal), { ...newMeal }, ...enhancedMealEvents.slice(indexOfUpdatedMeal + 1)]);
+  }, [enhancedMealEvents]);
   useEffect(() => {
     const fetchContractData = async () => {
-      const aYearAgoTimestampSeconds = getTimestampForFirstDayOfMonth(getStartMonthOfEventTracking());
-      const aMonthFromNowTimestampSeconds = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
       try {
-        const [allTimeReportResponse, isAdminResponse, isAllowedUserResponse, mealEventsResponse, userMealEventsResponse] = await Promise.all([
-          starknetWallet?.address ? cateringContract?.read.get_participation_report_by_time({seconds: 0}, {seconds: Math.floor(Date.now() / 1000)}) : Promise.resolve(null),
-          starknetWallet?.address ? cateringContract?.read.is_admin(starknetWallet?.address) : Promise.resolve(false),
-          starknetWallet?.address ? cateringContract.read?.is_allowed_user(starknetWallet?.address) : Promise.resolve(false),
-          cateringContract.read.get_events_infos_by_time({seconds: aYearAgoTimestampSeconds},{ seconds: aMonthFromNowTimestampSeconds }),
-          starknetWallet?.address ? cateringContract.read.get_user_events_by_time(starknetWallet?.address, {seconds: aYearAgoTimestampSeconds},{ seconds: aMonthFromNowTimestampSeconds }) : Promise.resolve([]),
+        await Promise.all([
+          getParticipationReportByTime(),
+          address ? getIsAdmin() : Promise.resolve(false),
+          address ? getIsAllowedUser() : Promise.resolve(false),
+          getEventsInfosByTime(),
+          address ? getUserEventsByTime() : Promise.resolve([]),
         ])
 
-        const {foodieRank: foodieRankData, allTimeMealCount: allTimeMealCountData} = starknetWallet?.address ? extractGlobalStatsFromReport(allTimeReportResponse, starknetWallet?.address) : { foodieRank: 0, allTimeMealCount: 0};
-        setIsAdmin(isAdminResponse);
-        setIsAllowedUser(isAllowedUserResponse);
-        setMealEvents(addUserParticipationToMealEvents(mealEventsResponse, userMealEventsResponse));
         setLoadingAllEvents(false);
-        setFoodieRank(foodieRankData);
-        setAllTimeMealCount(allTimeMealCountData)
-        if (starknetWallet?.address) {
+        if (address) {
           setSuccessFetchingUserEvents(true);
         }
       } catch (e) {
@@ -62,13 +65,13 @@ export const useMealData = () => {
       }
     }
 
-    if (isFullyLoaded) {
+    if (!isConnecting) {
       fetchContractData();
     }
-  }, [starknetWallet?.address, isFullyLoaded]);
+  }, [address, isConnecting]);
 
-  const futureMeals: Meal[] = mealEvents.filter((mealEvent) => Number(mealEvent.info.time.seconds) * 1000 > Date.now()).slice(0, 7);
-  const pastMeals = mealEvents.filter((mealEvent) => Number(mealEvent.info.time.seconds) * 1000 <= Date.now());
+  const futureMeals: Meal[] = enhancedMealEvents?.filter((mealEvent) => Number(mealEvent.info.time.seconds) * 1000 > Date.now()).slice(0, 7) ?? [];
+  const pastMeals = enhancedMealEvents?.filter((mealEvent) => Number(mealEvent.info.time.seconds) * 1000 <= Date.now()) ?? [];
 
   return {
     isAdmin,
@@ -85,15 +88,15 @@ export const useMealData = () => {
 }
 
 const addUserParticipationToMealEvents = (mealEvents: Meal[], userMealEvents: Meal[]) => {
-  if (!userMealEvents.length) {
-    return mealEvents
+  if (!userMealEvents?.length) {
+    return mealEvents ?? []
   } else {
-    return mealEvents.map((meal) => {
+    return mealEvents?.map((meal) => {
       return {
         ...meal,
         info: {
           ...meal.info,
-          registered: !!(userMealEvents.find(({id, info: {registered}}) => (meal.id === id) && registered)),
+          registered: !!(userMealEvents?.find(({id, info: {registered}}) => (meal.id === id) && registered)),
         }
       } 
     })

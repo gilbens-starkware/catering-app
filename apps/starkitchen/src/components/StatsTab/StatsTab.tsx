@@ -11,10 +11,12 @@ const {month: currentMonth, year: currentYear} = getCurrentDate();
 
 export const StatsTab = ({
   setActiveTab,
+  updateMeal,
   meals,
   foodieRank,
   allTimeMealCount,
 }: {
+  updateMeal: (mealId: string) => void,
   foodieRank?: number,
   allTimeMealCount?: number,
   meals: Meal[],
@@ -53,7 +55,13 @@ export const StatsTab = ({
               <h3 className="text-xl font-semibold mb-4">Past Meals</h3>
               <div className="space-y-4">
                 {(mealsGroupedByMonth[selectedDate] ?? []).map((meal) => (
-                    <MealCard isWalletConnected key={meal.id} meal={meal} isPastMeal  />
+                    <MealCard 
+                      key={meal.id} 
+                      updateMeal={updateMeal}
+                      isWalletConnected 
+                      meal={meal} 
+                      isPastMeal 
+                    />
                   )
                 )}
               </div>

@@ -1,16 +1,14 @@
 import './App.css'
 import { StarkitchenApp } from './components/StarkitchenApp';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
-import {StarknetContractConnectProvider} from '@catering-app/starknet-contract-connect';
+import { StarknetProvider } from './providers/StarknetProvider';
 
-const App = () => {
-  return (
-    <ErrorBoundary>
-      <StarknetContractConnectProvider dynamicEnvId={import.meta.env.VITE_APP_DYNAMIC_ENV_ID}>
-        <StarkitchenApp />
-      </StarknetContractConnectProvider>
-    </ErrorBoundary>
-  )
-}
+const App = () => (
+  <ErrorBoundary>
+    <StarknetProvider>
+      <StarkitchenApp />
+    </StarknetProvider>
+  </ErrorBoundary>
+)
 
 export default App

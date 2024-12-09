@@ -8,13 +8,10 @@ export const useIsMobile = () => {
       setIsMobile(window.matchMedia("(max-width: 768px)").matches);
     };
 
-    // Initial check
     updateIsMobile();
 
-    // Add resize listener
     window.addEventListener("resize", updateIsMobile);
 
-    // Cleanup on unmount
     return () => {
       window.removeEventListener("resize", updateIsMobile);
     };

@@ -52,10 +52,6 @@ Follow these steps to get started with the monorepo and set up your project:
        pnpm run dev:starkitchen
        ```
 
-10. **Check your deployed up**
-    - You can see your app live on {your-github-username}.github.io/{repo-name} for example: gilbens-starkware.github.io/catering-app
----
-
 ### IMPORTANT: Deployment
 
 1. **Make the Repository Public**
@@ -70,18 +66,114 @@ Follow these steps to get started with the monorepo and set up your project:
 3. **Explore Other Scripts**
    - Check the `package.json` file for other available scripts and explore their functionality.
 
+4. **Check your deployed up**
+  - You can see your app live on {your-github-username}.github.io/{repo-name} for example: gilbens-starkware.github.io/catering-app
 ---
 
-# Sub Packages' Readme files
+### Working With the contracts:
 
-## packages/starknet-contract-connect
+1. ** Set contract values **
+  - After deploying your contract go to `consts.ts` and change the `ABI` and `CONTRACT_ADDRESS` values.
 
-### [StarkNet Contract Connect](packages/starknet-contract-connect/README.md)
-A reusable library for wallet integration and smart contract interaction with on Starknet with React + Typescript at its core.
+2. ** useAccount hook ** 
+  - use the `useAccount` hook to get the connected user wallet address.
 
----
+```tsx
+import React from 'react';
+import { useAccount } from '@starknet-react/core';
 
-## apps/starkitchen
+export const SomeComponent = () => {
+  const {address, isConnecting} = useAccount();
 
-### [StarKitchen](apps/starkitchen/README.md)
-A StarkNet-powered application showcasing the usage of the `starknet-contract-connect` library in a catering registration web app.
+  if (isConnecting) {
+    return <div>Connecting to wallet...</div>
+  }
+
+  return address ? (
+    <div>{`Wallet Address: ${address}`}</div> 
+  ) :  (
+    <div>No wallet connected</div>
+  )
+};
+```
+
+3. ** ConnectWalletButton ** 
+  - use the `ConnectWalletButton` in order to display the `Connect Wallet`.
+
+```tsx
+import React from 'react';
+import { ConnectWalletButton } from '@/components/ConnectWalletButton/ConnectWalletButton';
+
+export const SomeComponent = () => {
+  return <ConnectWalletButton />
+};
+```
+
+4. ** `Read From Contract` with `useReadContract` ** 
+  - [docs](https://www.starknet-react.com/docs/hooks/use-read-contract) and an example for this hook: 
+
+```tsx
+import React from 'react';
+import { useAccount, useReadContract } from "@starknet-react/core";
+import { ABI, CONTRACT_ADDRESS } from "@/utils/consts";
+
+export const SomeComponent = () => {
+  
+  const {address, isConnecting} = useAccount();
+  const {data: isAdmin, refetch: getIsAdmin, isFetching} = useReadContract({ 
+    functionName: 'is_admin', 
+    enabled: false, // the default is true - if not set to false the api call will happen immediately
+    abi: ABI, 
+    address: CONTRACT_ADDRESS, 
+    args: [address] // arguments to the contract's is_admin method
+  });
+
+  useEffect(() => {
+    getIsAdmin(); // Fetch The data whenever you want.
+  }, [])
+
+  if (isFetching) {
+    return <div>Fetching Data...</div>
+  }
+
+  return isAdmin ? <div>I am an admin</div> : <div>I am not an admin</div>;
+};
+```
+
+
+4. ** `Write To Contract` with `useContract` and `useSendTransaction` ** 
+  - [useContract docs](https://www.starknet-react.com/docs/hooks/use-contract) and [useSendTransaction docs](https://www.starknet-react.com/docs/hooks/use-read-contract) and an example for this hook: 
+
+```tsx
+import React from 'react';
+import { useContract, useSendTransaction } from "@starknet-react/core";
+import { ABI, CONTRACT_ADDRESS } from "@/utils/consts";
+
+export const SomeComponent = () => {
+  
+  const {contract} = useContract({
+    abi: ABI,
+    address: CONTRACT_ADDRESS,
+  }) as { contract?: TypedContractV2<typeof ABI> };;
+
+  const calls = useMemo(() => {
+    if (!contract) return undefined;
+    if (someData) {
+      return [contract.populate("unregister", [meal.id])];
+    } else if (isAllowedUser) {
+      return [contract.populate("register", [meal.id])];
+    }
+  }, [someData, contract])
+
+  const { sendAsync } = useSendTransaction({ 
+    calls, 
+  });  
+
+  const onClick = () => {
+    const {transaction_hash} = await sendAsync();
+    await contract?.providerOrAccount?.waitForTransaction(transaction_hash, { retryInterval: 2e3 });
+  }
+  
+  return <button onClick={onClick}>click me</button>;
+};
+```

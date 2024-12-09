@@ -4,26 +4,24 @@ import { DisconnectWalletDialog } from "../Dialogs/DisconnectWalletDialog";
 import { useCallback, useState } from "react";
 import { SrcPrefix } from "../../utils/consts";
 import { truncateAddress } from "../../utils/string";
-import { ConnectWalletButton, useWalletEvents, Wallet } from "@catering-app/starknet-contract-connect";
+import {UseAccountResult, useDisconnect } from '@starknet-react/core';
+import { ConnectWalletButton } from "../ConnectWalletButton/ConnectWalletButton";
 
 export const Header = ({
-  isConnected,
   onConnectWallet,
   wallet,
 }: {
-  isConnected: boolean;
   onConnectWallet: () => void;
-  wallet?: Wallet<any>,
+  wallet?: UseAccountResult,
 }) => {
   const [isDisconnectDialogOpen, setIsDisconnectDialogOpen] = useState<boolean>(false);
-  const {handleLogOut} = useWalletEvents();
-
+  const {disconnect} = useDisconnect();
   const handleCloseDisconnectDialog = useCallback(() => {
     setIsDisconnectDialogOpen(false);
   }, [])
   
-  const disconnect = useCallback(() => {
-    handleLogOut();
+  const handleDisconnect = useCallback(() => {
+    disconnect();
     handleCloseDisconnectDialog();
   }, []);
 
@@ -40,7 +38,7 @@ export const Header = ({
               <h1 className="text-3xl font-bold text-gray-900">StarKitchen</h1>
             </div>
             <div className="flex items-center space-x-4">
-                {isConnected ? (
+                {wallet?.isConnected ? (
                 <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
                   <span className="text-sm font-medium text-gray-500">
                     {truncateAddress(wallet?.address ?? '')}
@@ -56,7 +54,7 @@ export const Header = ({
             </div>
           </div>
         </div>
-        <DisconnectWalletDialog onDisconnect={disconnect} open={isDisconnectDialogOpen} onClose={handleCloseDisconnectDialog} />
+        <DisconnectWalletDialog onDisconnect={handleDisconnect} open={isDisconnectDialogOpen} onClose={handleCloseDisconnectDialog} />
       </header>
   )
 }

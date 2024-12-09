@@ -3,10 +3,13 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card
 import { AlertCircle, Check, Users, UtensilsCrossed, X } from "lucide-react"
 import { Badge } from '../ui/badge'
 import { Meal } from "../../types/meal"
-import { useCateringContract } from "../../hooks/useCateringContract"
 import { openFullscreenLoader } from "../FullscreenLoaderModal/FullscreenLoaderModal"
-import { ConnectWalletButton } from "@catering-app/starknet-contract-connect"
 import { feltToString } from "../../utils/cairo"
+import { ABI, CONTRACT_ADDRESS } from "../../utils/consts"
+import { useContract, useSendTransaction } from "@starknet-react/core"
+import { useMemo } from "react"
+import {TypedContractV2} from 'starknet';
+import { ConnectWalletButton } from "../ConnectWalletButton/ConnectWalletButton"
 
 export const MealCard = ({ 
   meal,
@@ -27,8 +30,24 @@ export const MealCard = ({
   isAllowedUser?: boolean,
   isNextMeal?: boolean 
 }) => {
-  const cateringContract = useCateringContract();
+  const {contract} = useContract({
+    abi: ABI,
+    address: CONTRACT_ADDRESS,
+  }) as { contract?: TypedContractV2<typeof ABI> };;
 
+  const calls = useMemo(() => {
+    if (!contract) return undefined;
+    if (meal.info.registered) {
+      return [contract.populate("unregister", [meal.id])];
+    } else if (isAllowedUser) {
+      return [contract.populate("register", [meal.id])];
+    }
+  }, [meal.info.registered, contract, isAllowedUser])
+
+  const { sendAsync } = useSendTransaction({ 
+    calls, 
+  }); 
+  
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
   }
@@ -36,17 +55,10 @@ export const MealCard = ({
   const handleRegistration = async () => {
     let closeFullscreenLoader;
     try {
-      if (meal.info.registered) {
-        closeFullscreenLoader = openFullscreenLoader('Unregistering you from meal...');
-        const {transaction_hash} = await cateringContract?.write?.unregister(meal.id);
-        await cateringContract?.write?.providerOrAccount?.waitForTransaction(transaction_hash, { retryInterval: 2e3 });
-        updateMeal?.(meal.id);
-      } else if (isAllowedUser) {
-        closeFullscreenLoader = openFullscreenLoader('Registering you to the selected meal...');
-        const {transaction_hash} = await cateringContract?.write?.register(meal.id);
-        await cateringContract?.write?.providerOrAccount?.waitForTransaction(transaction_hash, { retryInterval: 2e3 });
-        updateMeal?.(meal.id);
-      }
+      closeFullscreenLoader = openFullscreenLoader('Registering you to the selected meal...');
+      const {transaction_hash} = await sendAsync();
+      await contract?.providerOrAccount?.waitForTransaction(transaction_hash, { retryInterval: 2e3 });
+      updateMeal?.(meal.id);
     } catch (e) {
       console.error('Error: meal status update failed', e);
     } finally {

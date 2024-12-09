@@ -17,7 +17,7 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx"
-  ],
+, "../../apps/starkitchen/src/components/ConnectWalletButton/ConnectWalletButton.tsx"  ],
   "exclude": [
     "node_modules",
     "dist",

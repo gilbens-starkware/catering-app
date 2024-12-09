@@ -1,5 +1,5 @@
 import { useWalletEvents } from './useWalletEvents';
-import { useStarknetWallet } from './useStarknetWallet';
+import { useAccount} from './useStarknetWallet';
 export { useStarknetWallet, useWalletEvents, };
 export { useUserWallets } from '@dynamic-labs/sdk-react-core';
 export * from './useContract';

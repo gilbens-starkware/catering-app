@@ -107,8 +107,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0
       '@starknet-react/core':
-        specifier: ^3.6.0
-        version: 3.6.0(bufferutil@4.0.8)(get-starknet-core@4.0.0)(react@18.3.1)(starknet@6.11.0)(typescript@5.6.3)(utf-8-validate@5.0.10)
+        specifier: ^3.6.2
+        version: 3.6.2(bufferutil@4.0.8)(get-starknet-core@4.0.0)(react@18.3.1)(starknet@6.11.0)(typescript@5.6.3)(utf-8-validate@5.0.10)
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -185,6 +185,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^4.3.3
         version: 4.3.3(vite@5.4.11(@types/node@22.9.0)(terser@5.36.0))
+      abi-wan-kanabi:
+        specifier: ^2.2.3
+        version: 2.2.3
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.49)
@@ -230,15 +233,15 @@ importers:
       '@dynamic-labs/starknet':
         specifier: ^4.0.0-alpha.38
         version: 4.0.0-alpha.38(@dynamic-labs/types@4.0.0-alpha.38(eventemitter3@5.0.1))(bufferutil@4.0.8)(eventemitter3@5.0.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
+      '@radix-ui/react-alert-dialog':
+        specifier: ^1.1.2
+        version: 1.1.2(@types/react-dom@18.3.1)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-slot':
         specifier: ^1.1.0
         version: 1.1.0(@types/react@18.3.12)(react@18.3.1)
-      '@starknet-react/chains':
-        specifier: ^3.1.0
-        version: 3.1.0
       '@starknet-react/core':
-        specifier: ^3.6.0
-        version: 3.6.0(bufferutil@4.0.8)(get-starknet-core@4.0.0)(react@18.3.1)(starknet@6.11.0)(typescript@5.6.3)(utf-8-validate@5.0.10)
+        specifier: ^3.6.2
+        version: 3.6.2(bufferutil@4.0.8)(get-starknet-core@4.0.0)(react@18.3.1)(starknet@6.11.0)(typescript@5.6.3)(utf-8-validate@5.0.10)
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -254,13 +257,13 @@ importers:
       react-dom:
         specifier: ^18.0.0
         version: 18.3.1(react@18.3.1)
-      starknet:
-        specifier: ^6.11.0
-        version: 6.11.0
       tailwind-merge:
         specifier: ^2.5.4
         version: 2.5.4
     devDependencies:
+      '@starknet-io/types-js':
+        specifier: ^0.7.10
+        version: 0.7.10
       '@types/react':
         specifier: ^18.0.28
         version: 18.3.12
@@ -2896,14 +2899,17 @@ packages:
   '@starknet-io/get-starknet@4.0.4':
     resolution: {integrity: sha512-3qPn8l7khUef1710j/qp80T9iP+QKRYzaHAMae6ZJtGLKxDNqGdRMb6Efi0XARIHXG3xbg26Fh32FesEflV/Og==}
 
+  '@starknet-io/types-js@0.7.10':
+    resolution: {integrity: sha512-1VtCqX4AHWJlRRSYGSn+4X1mqolI1Tdq62IwzoU2vUuEE72S1OlEeGhpvd6XsdqXcfHmVzYfj8k1XtKBQqwo9w==}
+
   '@starknet-io/types-js@0.7.7':
     resolution: {integrity: sha512-WLrpK7LIaIb8Ymxu6KF/6JkGW1sso988DweWu7p5QY/3y7waBIiPvzh27D9bX5KIJNRDyOoOVoHVEKYUYWZ/RQ==}
 
   '@starknet-react/chains@3.1.0':
     resolution: {integrity: sha512-h+fxh+Bs8h0ZSEX651vG3mn1NtMKzFDSHqrX7Q8YRRIeTKolPCx4vmoi5Gg19SXr/9iIVSwgx6qe4rVZTNfhcQ==}
 
-  '@starknet-react/core@3.6.0':
-    resolution: {integrity: sha512-+5acQqMZkk6q2/cogoY7g/Ne2zgUHUvbgEc1dE9ItNbfpMJqxUtB5Ovt7+Q3utsYUYXbuxWgq/G6CjPHGrtqzg==}
+  '@starknet-react/core@3.6.2':
+    resolution: {integrity: sha512-cEheoYB8Sy65+su1A7WzdyX/Qq89wLQXFmqOwsaIwpKNy1zzcwZfEOStCpzs6jLh7yEy3QU6arbn7wytt5OhKQ==}
     peerDependencies:
       get-starknet-core: ^4.0.0
       react: ^18.0
@@ -10158,7 +10164,7 @@ snapshots:
   '@starknet-io/get-starknet-core@4.0.4':
     dependencies:
       '@module-federation/runtime': 0.1.18
-      '@starknet-io/types-js': 0.7.7
+      '@starknet-io/types-js': 0.7.10
       async-mutex: 0.5.0
 
   '@starknet-io/get-starknet@4.0.4':
@@ -10166,13 +10172,15 @@ snapshots:
       '@starknet-io/get-starknet-core': 4.0.4
       bowser: 2.11.0
 
+  '@starknet-io/types-js@0.7.10': {}
+
   '@starknet-io/types-js@0.7.7': {}
 
   '@starknet-react/chains@3.1.0': {}
 
-  '@starknet-react/core@3.6.0(bufferutil@4.0.8)(get-starknet-core@4.0.0)(react@18.3.1)(starknet@6.11.0)(typescript@5.6.3)(utf-8-validate@5.0.10)':
+  '@starknet-react/core@3.6.2(bufferutil@4.0.8)(get-starknet-core@4.0.0)(react@18.3.1)(starknet@6.11.0)(typescript@5.6.3)(utf-8-validate@5.0.10)':
     dependencies:
-      '@starknet-io/types-js': 0.7.7
+      '@starknet-io/types-js': 0.7.10
       '@starknet-react/chains': 3.1.0
       '@tanstack/react-query': 5.61.3(react@18.3.1)
       eventemitter3: 5.0.1
@@ -12332,7 +12340,7 @@ snapshots:
 
   get-starknet-core@4.0.0:
     dependencies:
-      '@starknet-io/types-js': 0.7.7
+      '@starknet-io/types-js': 0.7.10
 
   get-stream@6.0.1: {}
 
@@ -14342,7 +14350,7 @@ snapshots:
       isomorphic-fetch: 3.0.0
       lossless-json: 4.0.2
       pako: 2.1.0
-      starknet-types-07: '@starknet-io/types-js@0.7.7'
+      starknet-types-07: '@starknet-io/types-js@0.7.10'
       ts-mixer: 6.0.4
       url-join: 4.0.1
     transitivePeerDependencies:
@@ -14352,7 +14360,7 @@ snapshots:
     dependencies:
       '@starknet-io/get-starknet': 4.0.4
       '@starknet-io/get-starknet-core': 4.0.4
-      '@starknet-io/types-js': 0.7.7
+      '@starknet-io/types-js': 0.7.10
       '@trpc/client': 10.45.2(@trpc/server@10.45.2)
       '@trpc/server': 10.45.2
       '@walletconnect/sign-client': 2.17.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
