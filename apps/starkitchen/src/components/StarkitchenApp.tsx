@@ -17,8 +17,6 @@ export const StarkitchenApp = () => {
   const onConnectWallet = async () => {
     setSuccessFetchingUserEvents(false);
   }
-
-  
   
   return (
     <div className="min-h-screen w-screen bg-gray-100">

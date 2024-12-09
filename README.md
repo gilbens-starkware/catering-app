@@ -72,10 +72,10 @@ Follow these steps to get started with the monorepo and set up your project:
 
 ### Working With the contracts:
 
-1. ** Set contract values **
+1. **Set contract values**
   - After deploying your contract go to `consts.ts` and change the `ABI` and `CONTRACT_ADDRESS` values.
 
-2. ** useAccount hook ** 
+2. **`useAccount` hook** 
   - use the `useAccount` hook to get the connected user wallet address.
 
 ```tsx
@@ -97,7 +97,7 @@ export const SomeComponent = () => {
 };
 ```
 
-3. ** ConnectWalletButton ** 
+3. **ConnectWalletButton** 
   - use the `ConnectWalletButton` in order to display the `Connect Wallet`.
 
 ```tsx
@@ -109,7 +109,7 @@ export const SomeComponent = () => {
 };
 ```
 
-4. ** `Read From Contract` with `useReadContract` ** 
+4. **`Read From Contract` with `useReadContract`**
   - [docs](https://www.starknet-react.com/docs/hooks/use-read-contract) and an example for this hook: 
 
 ```tsx
@@ -118,18 +118,17 @@ import { useAccount, useReadContract } from "@starknet-react/core";
 import { ABI, CONTRACT_ADDRESS } from "@/utils/consts";
 
 export const SomeComponent = () => {
-  
   const {address, isConnecting} = useAccount();
   const {data: isAdmin, refetch: getIsAdmin, isFetching} = useReadContract({ 
     functionName: 'is_admin', 
     enabled: false, // the default is true - if not set to false the api call will happen immediately
-    abi: ABI, 
-    address: CONTRACT_ADDRESS, 
+    abi: ABI,
+    address: CONTRACT_ADDRESS,
     args: [address] // arguments to the contract's is_admin method
   });
 
   useEffect(() => {
-    getIsAdmin(); // Fetch The data whenever you want.
+    getIsAdmin(); // Fetch The data whenever you want - or remove the "enabled: false" and make the api call run immediately.
   }, [])
 
   if (isFetching) {
@@ -140,8 +139,7 @@ export const SomeComponent = () => {
 };
 ```
 
-
-4. ** `Write To Contract` with `useContract` and `useSendTransaction` ** 
+4. **`Write To Contract` with `useContract` and `useSendTransaction`**
   - [useContract docs](https://www.starknet-react.com/docs/hooks/use-contract) and [useSendTransaction docs](https://www.starknet-react.com/docs/hooks/use-read-contract) and an example for this hook: 
 
 ```tsx

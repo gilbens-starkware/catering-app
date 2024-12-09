@@ -11,7 +11,7 @@ export const useMealData = () => {
   const [loadingAllEvents, setLoadingAllEvents] = useState(true);
   const [isSuccessFetchingUserEvents, setSuccessFetchingUserEvents] = useState(false);
   const {address, isConnecting} = useAccount();
-  const {data: isAdmin, refetch: getIsAdmin,} = useReadContract({ functionName: 'is_admin', enabled: false, abi: ABI, address: CONTRACT_ADDRESS, args: [address] });
+  const {data: isAdmin, refetch: getIsAdmin} = useReadContract({ functionName: 'is_admin', enabled: false, abi: ABI, address: CONTRACT_ADDRESS, args: [address] });
   const {data: isAllowedUser, refetch: getIsAllowedUser} = useReadContract({ functionName: 'is_allowed_user', enabled: false, abi: ABI, address: CONTRACT_ADDRESS, args: [address] });
   const {data: allTimeReportResponse, refetch: getParticipationReportByTime } = useReadContract({ enabled: false, functionName: 'get_participation_report_by_time', abi: ABI, address: CONTRACT_ADDRESS, args: [{seconds: 0}, {seconds: Math.floor(Date.now() / 1000)}] });
   const {data: rawMealEvents, refetch: getEventsInfosByTime} = useReadContract({ functionName: 'get_events_infos_by_time', enabled: false, abi: ABI, address: CONTRACT_ADDRESS, args: [{seconds: aYearAgoTimestampSeconds}, { seconds: aMonthFromNowTimestampSeconds }] });
