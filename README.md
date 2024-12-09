@@ -109,7 +109,7 @@ export const SomeComponent = () => {
 };
 ```
 
-4. **`Read From Contract` with `useReadContract`**
+4. `Read From Contract` with `useReadContract`
   - [docs](https://www.starknet-react.com/docs/hooks/use-read-contract) and an example for this hook: 
 
 ```tsx
@@ -139,7 +139,7 @@ export const SomeComponent = () => {
 };
 ```
 
-4. **`Write To Contract` with `useContract` and `useSendTransaction`**
+4. `Write To Contract` with `useContract` and `useSendTransaction`
   - [useContract docs](https://www.starknet-react.com/docs/hooks/use-contract) and [useSendTransaction docs](https://www.starknet-react.com/docs/hooks/use-read-contract) and an example for this hook: 
 
 ```tsx
