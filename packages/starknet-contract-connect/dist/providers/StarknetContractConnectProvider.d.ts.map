@@ -1,1 +1,0 @@
-{"version":3,"file":"StarknetContractConnectProvider.d.ts","sourceRoot":"","sources":["../../src/providers/StarknetContractConnectProvider.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAC,EAAE,EAAE,iBAAiB,EAAC,MAAM,OAAO,CAAC;AAM5C,eAAO,MAAM,+BAA+B,EAAE,EAAE,CAAC,iBAAiB,GAAG;IAAE,YAAY,EAAE,MAAM,CAAA;CAAE,CAc5F,CAAC"}

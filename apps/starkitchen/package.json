@@ -12,7 +12,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@catering-app/starknet-contract-connect": "workspace:*",
     "@dynamic-labs/sdk-react-core": "^4.0.0-alpha.38",
     "@dynamic-labs/starknet": "^4.0.0-alpha.38",
     "@hookform/resolvers": "^3.9.1",

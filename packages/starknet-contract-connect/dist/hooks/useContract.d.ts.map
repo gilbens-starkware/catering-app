@@ -1,1 +1,0 @@
-{"version":3,"file":"useContract.d.ts","sourceRoot":"","sources":["../../src/hooks/useContract.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,GAAG,EAAW,QAAQ,EAAE,WAAW,EAAE,MAAM,UAAU,CAAC;AAG/D,eAAO,MAAM,kBAAkB,aAG7B,CAAC;AAEH,eAAO,MAAM,WAAW,qBAAoB;IAC1C,GAAG,EAAE,GAAG,CAAC;IACT,OAAO,EAAE,MAAM,CAAC;CACjB;;;CAiBA,CAAA"}
