@@ -7,6 +7,8 @@ trait IRegistration<ContractState> {
     fn register_apartment(ref self: ContractState, id: ApartmentId, apartment_info: ApartmentInfo);
 
     fn transfer(ref self: ContractState, id: ApartmentId, new_owner: ContractAddress);
+
+    fn get_info(ref self: ContractState, id: ApartmentId) -> ApartmentInfo;
 }
 
 #[derive(Drop, starknet::Event)]
@@ -77,6 +79,11 @@ mod registration {
                         timestamp: get_block_timestamp(),
                     },
                 )
+        }
+
+
+        fn get_info(ref self: ContractState, id: ApartmentId) -> ApartmentInfo {
+            self.apt.read(id).expect('Apartment does not exist')
         }
     }
 }
