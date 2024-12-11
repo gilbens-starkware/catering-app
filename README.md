@@ -174,9 +174,9 @@ export const SomeComponent = () => {
   const calls = useMemo(() => {
     if (!contract) return undefined;
     if (someData) {
-      return [contract.populate("unregister", [meal.id])];
+      return [contract.populate("unregister", [ad.id])];
     } else if (isAllowedUser) {
-      return [contract.populate("register", [meal.id])];
+      return [contract.populate("register", [ad.id])];
     }
   }, [someData, contract])
 

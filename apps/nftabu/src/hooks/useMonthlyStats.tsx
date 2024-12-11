@@ -1,18 +1,18 @@
 import { useMemo } from 'react';
-import { Meal } from '../types/meal';
-import { mealCountByDay } from '../utils/date';
+import { Ad } from '../types/ad';
+import { adCountByDay } from '../utils/date';
 
 export const useMonthlyStats = ({
-  mealsGroupedByMonth,
+  adsGroupedByMonth,
 }: {
-  mealsGroupedByMonth: Record<string, Meal[]>;
+  adsGroupedByMonth: Record<string, Ad[]>;
 }) => {
   return useMemo(
     () =>
-      Object.entries(mealsGroupedByMonth).map(([month, meals]) => ({
+      Object.entries(adsGroupedByMonth).map(([month, ads]) => ({
         month,
-        mealsByDay: mealCountByDay(meals),
+        adsByDay: adCountByDay(ads),
       })),
-    [mealsGroupedByMonth],
+    [adsGroupedByMonth],
   );
 };

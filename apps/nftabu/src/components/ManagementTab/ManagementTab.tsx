@@ -151,7 +151,7 @@ export const ManagementTab = () => {
               className="flex items-center justify-between p-4 bg-white rounded-lg shadow"
             >
               <span className="font-semibold">{`${truncateAddress(user)} (${name ?? 'Unknown'})`}</span>
-              <Badge variant="secondary">Meals: {n_participations}</Badge>
+              <Badge variant="secondary">Ads: {n_participations}</Badge>
             </div>
           ))}
         </div>

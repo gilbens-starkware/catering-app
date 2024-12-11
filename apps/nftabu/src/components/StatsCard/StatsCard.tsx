@@ -22,17 +22,17 @@ const COLORS = [
 export const StatsCard = ({
   stats,
   foodieRank,
-  allTimeMealCount,
+  allTimeAdCount,
 }: {
   stats?: MonthlyStats;
   foodieRank?: number;
-  allTimeMealCount?: number;
+  allTimeAdCount?: number;
 }) => {
   if (!stats) {
     return null;
   }
 
-  const pieData = Object.entries(stats?.mealsByDay).map(([name, value]) => ({
+  const pieData = Object.entries(stats?.adsByDay).map(([name, value]) => ({
     name,
     value,
   }));
@@ -46,11 +46,11 @@ export const StatsCard = ({
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <p className="text-sm font-medium text-muted-foreground">
-              Total Meal Count
+              Total Ad Count
             </p>
             <div className="flex items-center space-x-2">
               <Utensils className="h-6 w-6 text-primary" />
-              <p className="text-2xl font-bold">{allTimeMealCount}</p>
+              <p className="text-2xl font-bold">{allTimeAdCount}</p>
             </div>
           </div>
           <div className="space-y-2">
@@ -65,14 +65,14 @@ export const StatsCard = ({
         </div>
         <div>
           <p className="text-sm font-medium text-muted-foreground mb-2">
-            Meals by Day of Week
+            Ads by Day of Week
           </p>
           <div className="h-64">
-            {allTimeMealCount ? (
+            {allTimeAdCount ? (
               <ChartContainer
                 config={{
-                  mealsByDay: {
-                    label: 'Meals by Day',
+                  adsByDay: {
+                    label: 'Ads by Day',
                     color: 'hsl(var(--chart-1))',
                   },
                 }}
@@ -103,7 +103,7 @@ export const StatsCard = ({
                 </ResponsiveContainer>
               </ChartContainer>
             ) : (
-              <div className="text-sm font-medium">No Meals Found</div>
+              <div className="text-sm font-medium">No Ads Found</div>
             )}
           </div>
         </div>

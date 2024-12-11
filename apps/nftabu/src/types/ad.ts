@@ -1,4 +1,4 @@
-export type Meal = {
+export type Ad = {
   id: string;
   info: {
     time: { seconds: number };

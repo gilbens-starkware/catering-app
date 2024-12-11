@@ -1,4 +1,4 @@
-import { Meal } from '../types/meal';
+import { Ad } from '../types/ad';
 
 export const getStartMonthOfEventTracking = () => {
   const now = new Date();
@@ -36,7 +36,7 @@ export const getTimestampForFirstDayOfMonth = (monthYear: string) => {
   return Math.floor(date.getTime() / 1000);
 };
 
-export const mealCountByDay = (meals: Meal[]): { [key: string]: number } => {
+export const adCountByDay = (ads: Ad[]): { [key: string]: number } => {
   const daysOfWeek = {
     Sunday: 0,
     Monday: 0,
@@ -47,7 +47,7 @@ export const mealCountByDay = (meals: Meal[]): { [key: string]: number } => {
     Saturday: 0,
   };
 
-  meals.forEach(({ info: { time } }) => {
+  ads.forEach(({ info: { time } }) => {
     const date = new Date(Number(time.seconds) * 1000);
     const dayOfWeek = date.toLocaleString('en-US', {
       weekday: 'long',
@@ -95,30 +95,30 @@ export const getMonthOptions = () => {
   return months;
 };
 
-export const groupMealsByMonth = (meals: Meal[]) => {
+export const groupAdsByMonth = (ads: Ad[]) => {
   const now = new Date();
   const thisYear = now.getFullYear();
   const thisMonth = now.getMonth();
 
   const months = getMonthOptions();
 
-  const result: Record<string, Meal[]> = Object.fromEntries(
+  const result: Record<string, Ad[]> = Object.fromEntries(
     months.map(month => [month, []]),
   );
 
   const oneYearAgo =
     new Date(thisYear, thisMonth, 1).getTime() - 365 * 24 * 60 * 60 * 1000;
-  const lastYearMeals = meals.filter(
-    meal =>
-      Number(meal.info.time.seconds) * 1000 >= oneYearAgo &&
-      Number(meal.info.time.seconds) * 1000 < now.getTime(),
+  const lastYearAds = ads.filter(
+    ad =>
+      Number(ad.info.time.seconds) * 1000 >= oneYearAgo &&
+      Number(ad.info.time.seconds) * 1000 < now.getTime(),
   );
 
-  lastYearMeals.forEach(meal => {
-    const date = new Date(Number(meal.info.time.seconds) * 1000);
+  lastYearAds.forEach(ad => {
+    const date = new Date(Number(ad.info.time.seconds) * 1000);
     const yearMonth = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
     if (result[yearMonth]) {
-      result[yearMonth].push(meal);
+      result[yearMonth].push(ad);
     }
   });
 

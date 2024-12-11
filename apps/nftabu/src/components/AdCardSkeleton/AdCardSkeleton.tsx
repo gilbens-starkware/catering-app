@@ -1,7 +1,7 @@
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export const MealCardSkeleton = () => (
+export const AdCardSkeleton = () => (
   <Card>
     <CardHeader>
       <Skeleton className="h-6 w-3/4" />

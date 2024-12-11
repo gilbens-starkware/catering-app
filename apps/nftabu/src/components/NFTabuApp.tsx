@@ -4,9 +4,9 @@ import { useAccount } from '@starknet-react/core';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Calendar, PieChart, Users } from 'lucide-react';
 import { AppTabs } from '../types/ui';
-import { UpcomingMealsTab } from './UpcomingMealsTab/UpcomingMealsTab';
+import { UpcomingAdsTab } from './UpcomingAdsTab/UpcomingAdsTab';
 import { StatsTab } from './StatsTab/StatsTab';
-import { useMealData } from '../hooks/useMealData';
+import { useAdData } from '../hooks/useAdData';
 import { ManagementTab } from './ManagementTab/ManagementTab';
 
 /// A function to create the main NFTabuApp component.
@@ -15,19 +15,19 @@ export const NFTabuApp = () => {
   /// useState is a React hook that allows you to have state variables which can be accessed and updated in your component.
   /// In this case, we can access the activeTab value through the activeTab variable.
   /// We can also update the activeTab value by calling the setActiveTab function. This will cause the component to re-render.
-  const [activeTab, setActiveTab] = useState<string>(AppTabs.MEAL_REGISTRATION);
+  const [activeTab, setActiveTab] = useState<string>(AppTabs.AD_REGISTRATION);
   const {
-    pastMeals,
-    futureMeals,
+    pastAds,
+    futureAds,
     isAllowedUser,
     foodieRank,
-    allTimeMealCount,
+    allTimeAdCount,
     isAdmin,
     loadingAllEvents,
     isSuccessFetchingUserEvents,
-    updateMeal,
+    updateAd,
     setSuccessFetchingUserEvents,
-  } = useMealData();
+  } = useAdData();
 
   const onConnectWallet = async () => {
     setSuccessFetchingUserEvents(false);
@@ -43,13 +43,13 @@ export const NFTabuApp = () => {
           className="space-y-4"
         >
           <TabsList>
-            <TabsTrigger value={AppTabs.MEAL_REGISTRATION}>
+            <TabsTrigger value={AppTabs.AD_REGISTRATION}>
               <Calendar className="mr-2 h-4 w-4" />
-              Meal Registration
+              Ad Registration
             </TabsTrigger>
             <TabsTrigger
               disabled={!starknetWallet.isConnected}
-              value={AppTabs.STATS_AND_PREV_MEALS}
+              value={AppTabs.STATS_AND_PREV_ADS}
             >
               <PieChart className="mr-2 h-4 w-4" />
               History & Stats
@@ -61,29 +61,29 @@ export const NFTabuApp = () => {
               </TabsTrigger>
             ) : null}
           </TabsList>
-          <TabsContent value={AppTabs.MEAL_REGISTRATION} className="space-y-12">
-            <UpcomingMealsTab
-              updateMeal={updateMeal}
+          <TabsContent value={AppTabs.AD_REGISTRATION} className="space-y-12">
+            <UpcomingAdsTab
+              updateAd={updateAd}
               loadingAllEvents={loadingAllEvents}
               isSuccessFetchingUserEvents={isSuccessFetchingUserEvents}
               isAllowedUser={isAllowedUser}
-              futureMeals={futureMeals}
-              pastMeals={pastMeals}
+              futureAds={futureAds}
+              pastAds={pastAds}
               address={starknetWallet?.address}
               onConnectWallet={onConnectWallet}
               isWalletConnected={starknetWallet.isConnected ?? false}
             />
           </TabsContent>
           <TabsContent
-            value={AppTabs.STATS_AND_PREV_MEALS}
+            value={AppTabs.STATS_AND_PREV_ADS}
             className="space-y-12"
           >
             <StatsTab
               foodieRank={foodieRank}
-              allTimeMealCount={allTimeMealCount}
+              allTimeAdCount={allTimeAdCount}
               setActiveTab={setActiveTab}
-              updateMeal={updateMeal}
-              meals={pastMeals}
+              updateAd={updateAd}
+              ads={pastAds}
             />
           </TabsContent>
           {isAdmin ? (

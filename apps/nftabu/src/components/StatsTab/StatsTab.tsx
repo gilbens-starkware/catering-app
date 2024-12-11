@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { MealCard } from '../MealCard/MealCard';
+import { AdCard } from '../AdCard/AdCard';
 import {
   Select,
   SelectContent,
@@ -8,42 +8,42 @@ import {
   SelectValue,
 } from '../ui/select';
 import { StatsCard } from '../StatsCard/StatsCard';
-import { getCurrentDate, groupMealsByMonth } from '../../utils/date';
+import { getCurrentDate, groupAdsByMonth } from '../../utils/date';
 import { useMonthlyStats } from '../../hooks/useMonthlyStats';
 import { EmptyStatsCard } from '../StatsCard/EmptyStatsCard';
-import { Meal } from '../../types/meal';
+import { Ad } from '../../types/ad';
 
 const { month: currentMonth, year: currentYear } = getCurrentDate();
 
 export const StatsTab = ({
   setActiveTab,
-  updateMeal,
-  meals,
+  updateAd,
+  ads,
   foodieRank,
-  allTimeMealCount,
+  allTimeAdCount,
 }: {
-  updateMeal: (mealId: string) => void;
+  updateAd: (adId: string) => void;
   foodieRank?: number;
-  allTimeMealCount?: number;
-  meals: Meal[];
+  allTimeAdCount?: number;
+  ads: Ad[];
   setActiveTab: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const [selectedDate, setSelectedDate] = useState<string>(
     `${currentYear}-${currentMonth}`,
   );
-  const mealsGroupedByMonth = useMemo(
+  const adsGroupedByMonth = useMemo(
     () =>
-      groupMealsByMonth(meals.filter(({ info: { registered } }) => registered)),
-    [meals],
+      groupAdsByMonth(ads.filter(({ info: { registered } }) => registered)),
+    [ads],
   );
-  const monthlyStats = useMonthlyStats({ mealsGroupedByMonth });
+  const monthlyStats = useMonthlyStats({ adsGroupedByMonth });
 
   const selectedMonthStats = monthlyStats.find(
     stat => stat.month === selectedDate,
   );
 
-  const mealCount = Object.values(selectedMonthStats?.mealsByDay ?? {}).reduce(
-    (mealsCount, acc) => mealsCount + acc,
+  const adCount = Object.values(selectedMonthStats?.adsByDay ?? {}).reduce(
+    (adsCount, acc) => adsCount + acc,
     0,
   );
 
@@ -68,26 +68,26 @@ export const StatsTab = ({
         </Select>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {mealCount === 0 ? (
+        {adCount === 0 ? (
           <EmptyStatsCard setActiveTab={setActiveTab} />
         ) : (
           <div>
-            <h3 className="text-xl font-semibold mb-4">Past Meals</h3>
+            <h3 className="text-xl font-semibold mb-4">Past Ads</h3>
             <div className="space-y-4">
-              {(mealsGroupedByMonth[selectedDate] ?? []).map(meal => (
-                <MealCard
-                  key={meal.id}
-                  updateMeal={updateMeal}
+              {(adsGroupedByMonth[selectedDate] ?? []).map(ad => (
+                <AdCard
+                  key={ad.id}
+                  updateAd={updateAd}
                   isWalletConnected
-                  meal={meal}
-                  isPastMeal
+                  ad={ad}
+                  isPastAd
                 />
               ))}
             </div>
           </div>
         )}
         <StatsCard
-          allTimeMealCount={allTimeMealCount}
+          allTimeAdCount={allTimeAdCount}
           foodieRank={foodieRank}
           stats={selectedMonthStats}
         />

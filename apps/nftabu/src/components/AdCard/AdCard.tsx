@@ -8,7 +8,7 @@ import {
 } from '../ui/card';
 import { AlertCircle, Check, Users, UtensilsCrossed, X } from 'lucide-react';
 import { Badge } from '../ui/badge';
-import { Meal } from '../../types/meal';
+import { Ad } from '../../types/ad';
 import { openFullscreenLoader } from '../FullscreenLoaderModal/FullscreenLoaderModal';
 import { shortString } from "starknet";
 import { ABI, CONTRACT_ADDRESS } from '../../utils/consts';
@@ -17,24 +17,24 @@ import { useMemo } from 'react';
 import { TypedContractV2 } from 'starknet';
 import { ConnectWalletButton } from '../ConnectWalletButton/ConnectWalletButton';
 
-export const MealCard = ({
-  meal,
+export const AdCard = ({
+  ad,
   onConnectWallet,
-  updateMeal,
+  updateAd,
   isSuccessFetchingUserEvents = false,
-  isPastMeal = false,
+  isPastAd = false,
   isWalletConnected = false,
   isAllowedUser = false,
-  isNextMeal = false,
+  isNextAd = false,
 }: {
-  meal: Meal;
-  isPastMeal?: boolean;
+  ad: Ad;
+  isPastAd?: boolean;
   isWalletConnected?: boolean;
   isSuccessFetchingUserEvents?: boolean;
   onConnectWallet?: () => void;
-  updateMeal?: (mealId: string) => void;
+  updateAd?: (adId: string) => void;
   isAllowedUser?: boolean;
-  isNextMeal?: boolean;
+  isNextAd?: boolean;
 }) => {
   const { contract } = useContract({
     abi: ABI,
@@ -43,12 +43,12 @@ export const MealCard = ({
 
   const calls = useMemo(() => {
     if (!contract) return undefined;
-    if (meal.info.registered) {
-      return [contract.populate('unregister', [meal.id])];
+    if (ad.info.registered) {
+      return [contract.populate('unregister', [ad.id])];
     } else if (isAllowedUser) {
-      return [contract.populate('register', [meal.id])];
+      return [contract.populate('register', [ad.id])];
     }
-  }, [meal.info.registered, contract, isAllowedUser]);
+  }, [ad.info.registered, contract, isAllowedUser]);
 
   const { sendAsync } = useSendTransaction({
     calls,
@@ -66,15 +66,15 @@ export const MealCard = ({
     let closeFullscreenLoader;
     try {
       closeFullscreenLoader = openFullscreenLoader(
-        'Registering you to the selected meal...',
+        'Registering you to the selected ad...',
       );
       const { transaction_hash } = await sendAsync();
       await contract?.providerOrAccount?.waitForTransaction(transaction_hash, {
         retryInterval: 2e3,
       });
-      updateMeal?.(meal.id);
+      updateAd?.(ad.id);
     } catch (e) {
-      console.error('Error: meal status update failed', e);
+      console.error('Error: ad status update failed', e);
     } finally {
       closeFullscreenLoader?.();
     }
@@ -84,8 +84,8 @@ export const MealCard = ({
     <Card>
       <CardHeader>
         <CardTitle className="flex justify-between items-center min-h-[30px]">
-          {isNextMeal ? 'Next Meal' : isPastMeal ? 'Meal Ended' : 'Future Meal'}
-          {meal.info.registered ? (
+          {isNextAd ? 'Next Ad' : isPastAd ? 'Ad Ended' : 'Future Ad'}
+          {ad.info.registered ? (
             <Badge variant="secondary" className="ml-2">
               Registered
             </Badge>
@@ -94,27 +94,27 @@ export const MealCard = ({
       </CardHeader>
       <CardContent>
         <p className="text-2xl font-semibold">
-          {formatDate(new Date(Number(meal.info.time.seconds) * 1000))}
+          {formatDate(new Date(Number(ad.info.time.seconds) * 1000))}
         </p>
-        {meal?.info?.number_of_participants !== undefined ? (
+        {ad?.info?.number_of_participants !== undefined ? (
           <p className="text-sm text-gray-500 mt-2">
             <Users className="inline-block mr-1 h-4 w-4" />
-            {Number(meal.info.number_of_participants)} registered
+            {Number(ad.info.number_of_participants)} registered
           </p>
         ) : null}
         <p className="text-sm text-gray-700 mt-2">
           <UtensilsCrossed className="inline-block mr-1 h-4 w-4" />
           Catering:{' '}
-          {shortString.decodeShortString(meal.info?.description ?? '') ?? 'Not Set Yet'}
+          {shortString.decodeShortString(ad.info?.description ?? '') ?? 'Not Set Yet'}
         </p>
         {isWalletConnected &&
         !isAllowedUser &&
         isSuccessFetchingUserEvents &&
-        !meal.info.registered ? (
+        !ad.info.registered ? (
           <div className="flex items-center mt-2 text-red-500">
             <AlertCircle className="w-4 h-4 mr-2" />
             <span className="text-sm">
-              You're not allowed to register to meals, yet!
+              You're not allowed to register to ads, yet!
             </span>
           </div>
         ) : null}
@@ -122,13 +122,13 @@ export const MealCard = ({
       <CardFooter>
         {isWalletConnected ? (
           <Button
-            className={`w-full ${meal.info.registered ? 'text-red-500 border-red-500 bg-red-50 hover:text-red-500 hover:border-red-500 hover:bg-red-100' : ''}`}
+            className={`w-full ${ad.info.registered ? 'text-red-500 border-red-500 bg-red-50 hover:text-red-500 hover:border-red-500 hover:bg-red-100' : ''}`}
             onClick={handleRegistration}
             disabled={
-              isWalletConnected && !isAllowedUser && !meal.info.registered
+              isWalletConnected && !isAllowedUser && !ad.info.registered
             }
           >
-            {meal.info.registered ? (
+            {ad.info.registered ? (
               <>
                 <X className="mr-2 h-4 w-4" />
                 Unregister

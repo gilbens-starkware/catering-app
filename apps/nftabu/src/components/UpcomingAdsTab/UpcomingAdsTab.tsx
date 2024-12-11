@@ -1,44 +1,44 @@
-import { Meal } from '../../types/meal';
-import { MealCard } from '../MealCard/MealCard';
-import { MealCardSkeleton } from '../MealCardSkeleton/MealCardSkeleton';
+import { Ad } from '../../types/ad';
+import { AdCard } from '../AdCard/AdCard';
+import { AdCardSkeleton } from '../AdCardSkeleton/AdCardSkeleton';
 
-export const UpcomingMealsTab = ({
+export const UpcomingAdsTab = ({
   isAllowedUser,
   onConnectWallet,
-  updateMeal,
-  futureMeals,
-  pastMeals,
+  updateAd,
+  futureAds,
+  pastAds,
   loadingAllEvents,
   isSuccessFetchingUserEvents,
   isWalletConnected,
 }: {
   address?: string;
-  futureMeals: Meal[];
-  pastMeals: Meal[];
+  futureAds: Ad[];
+  pastAds: Ad[];
   isAllowedUser?: boolean;
   loadingAllEvents: boolean;
   isSuccessFetchingUserEvents: boolean;
-  updateMeal: (mealId: string) => void;
+  updateAd: (adId: string) => void;
   onConnectWallet: () => void;
   isWalletConnected: boolean;
 }) => {
-  if (!loadingAllEvents && !futureMeals[0]) {
-    return <div>No upcoming futureMeals to display</div>;
+  if (!loadingAllEvents && !futureAds[0]) {
+    return <div>No upcoming futureAds to display</div>;
   }
 
   return (
     <>
       {loadingAllEvents ? (
-        <MealCardSkeleton />
+        <AdCardSkeleton />
       ) : (
-        <MealCard
+        <AdCard
           isSuccessFetchingUserEvents={isSuccessFetchingUserEvents}
-          updateMeal={updateMeal}
+          updateAd={updateAd}
           onConnectWallet={onConnectWallet}
           isAllowedUser={isAllowedUser}
-          meal={futureMeals[0]}
+          ad={futureAds[0]}
           isWalletConnected={isWalletConnected}
-          isNextMeal
+          isNextAd
         />
       )}
       <div>
@@ -47,17 +47,17 @@ export const UpcomingMealsTab = ({
           {loadingAllEvents
             ? Array(6)
                 .fill(null)
-                .map((_, index) => <MealCardSkeleton key={index} />)
-            : futureMeals
+                .map((_, index) => <AdCardSkeleton key={index} />)
+            : futureAds
                 .slice(1, 7)
-                .map((meal, index) => (
-                  <MealCard
+                .map((ad, index) => (
+                  <AdCard
                     isSuccessFetchingUserEvents={isSuccessFetchingUserEvents}
-                    updateMeal={updateMeal}
+                    updateAd={updateAd}
                     onConnectWallet={onConnectWallet}
                     isAllowedUser={isAllowedUser}
-                    key={meal.id ?? index}
-                    meal={meal}
+                    key={ad.id ?? index}
+                    ad={ad}
                     isWalletConnected={isWalletConnected}
                   />
                 ))}
@@ -67,19 +67,19 @@ export const UpcomingMealsTab = ({
           {loadingAllEvents
             ? Array(6)
                 .fill(null)
-                .map((_, index) => <MealCardSkeleton key={index} />)
-            : pastMeals
+                .map((_, index) => <AdCardSkeleton key={index} />)
+            : pastAds
                 .reverse()
                 .slice(0, 6)
-                .map((meal, index) => (
-                  <MealCard
+                .map((ad, index) => (
+                  <AdCard
                     isSuccessFetchingUserEvents={isSuccessFetchingUserEvents}
-                    isPastMeal
-                    updateMeal={updateMeal}
+                    isPastAd
+                    updateAd={updateAd}
                     onConnectWallet={onConnectWallet}
                     isAllowedUser={isAllowedUser}
-                    key={meal.id ?? index}
-                    meal={meal}
+                    key={ad.id ?? index}
+                    ad={ad}
                     isWalletConnected={isWalletConnected}
                   />
                 ))}

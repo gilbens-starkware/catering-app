@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Meal } from '../types/meal';
+import { Ad } from '../types/ad';
 import {
   getStartMonthOfEventTracking,
   getTimestampForFirstDayOfMonth,
@@ -13,8 +13,8 @@ const aYearAgoTimestampSeconds = getTimestampForFirstDayOfMonth(
 const aMonthFromNowTimestampSeconds =
   Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
 
-/// Various hooks to interact with the meal contract.
-export const useMealData = () => {
+/// Various hooks to interact with the ad contract.
+export const useAdData = () => {
   const [loadingAllEvents, setLoadingAllEvents] = useState(true);
   const [isSuccessFetchingUserEvents, setSuccessFetchingUserEvents] =
     useState(false);
@@ -43,7 +43,7 @@ export const useMealData = () => {
       address: CONTRACT_ADDRESS,
       args: [{ seconds: 0 }, { seconds: 2734816767 }],
     });
-  const { data: rawMealEvents, refetch: getEventsInfosByTime } =
+  const { data: rawAdEvents, refetch: getEventsInfosByTime } =
     useReadContract({
       functionName: 'get_events_infos_by_time',
       enabled: false,
@@ -54,7 +54,7 @@ export const useMealData = () => {
         { seconds: aMonthFromNowTimestampSeconds },
       ],
     });
-  const { data: rawUserMealParticipations, refetch: getUserEventsByTime } =
+  const { data: rawUserAdParticipations, refetch: getUserEventsByTime } =
     useReadContract({
       functionName: 'get_user_events_by_time',
       enabled: false,
@@ -66,40 +66,40 @@ export const useMealData = () => {
         { seconds: aMonthFromNowTimestampSeconds },
       ],
     });
-  const [userMealParticipations, setUserMealParticipations] = useState<Meal[]>(
+  const [userAdParticipations, setUserAdParticipations] = useState<Ad[]>(
     [],
   );
-  const [mealEvents, setMealEvents] = useState<Meal[]>([]);
+  const [adEvents, setAdEvents] = useState<Ad[]>([]);
 
-  useEffect(() => setMealEvents(rawMealEvents), [rawMealEvents]);
+  useEffect(() => setAdEvents(rawAdEvents), [rawAdEvents]);
   useEffect(
-    () => setUserMealParticipations(rawUserMealParticipations),
-    [rawUserMealParticipations],
+    () => setUserAdParticipations(rawUserAdParticipations),
+    [rawUserAdParticipations],
   );
 
-  const { foodieRank, allTimeMealCount } = address
+  const { foodieRank, allTimeAdCount } = address
     ? extractGlobalStatsFromReport(allTimeReportResponse ?? [], address)
-    : { foodieRank: 0, allTimeMealCount: 0 };
+    : { foodieRank: 0, allTimeAdCount: 0 };
 
-  const enhancedMealEvents = useMemo(
-    () => addUserParticipationToMealEvents(mealEvents, userMealParticipations),
-    [mealEvents, userMealParticipations],
+  const enhancedAdEvents = useMemo(
+    () => addUserParticipationToAdEvents(adEvents, userAdParticipations),
+    [adEvents, userAdParticipations],
   );
 
-  const updateMeal = useCallback(
-    async (mealId: string) => {
-      const indexOfUpdatedMeal = enhancedMealEvents
-        .map(meal => meal.id)
-        .indexOf(mealId);
-      const oldMeal = enhancedMealEvents[indexOfUpdatedMeal];
+  const updateAd = useCallback(
+    async (adId: string) => {
+      const indexOfUpdatedAd = enhancedAdEvents
+        .map(ad => ad.id)
+        .indexOf(adId);
+      const oldAd = enhancedAdEvents[indexOfUpdatedAd];
 
-      const oldParticipantCount = Number(oldMeal.info.number_of_participants);
-      const isUnregistering = oldMeal.info.registered;
-      const newMeal: Meal = {
-        ...oldMeal,
+      const oldParticipantCount = Number(oldAd.info.number_of_participants);
+      const isUnregistering = oldAd.info.registered;
+      const newAd: Ad = {
+        ...oldAd,
         info: {
-          ...oldMeal.info,
-          registered: !oldMeal.info.registered,
+          ...oldAd.info,
+          registered: !oldAd.info.registered,
           number_of_participants: isUnregistering
             ? oldParticipantCount - 1
             : oldParticipantCount + 1,
@@ -107,18 +107,18 @@ export const useMealData = () => {
       };
 
       getParticipationReportByTime();
-      setUserMealParticipations([
-        ...enhancedMealEvents.slice(0, indexOfUpdatedMeal),
-        { ...newMeal },
-        ...enhancedMealEvents.slice(indexOfUpdatedMeal + 1),
+      setUserAdParticipations([
+        ...enhancedAdEvents.slice(0, indexOfUpdatedAd),
+        { ...newAd },
+        ...enhancedAdEvents.slice(indexOfUpdatedAd + 1),
       ]);
-      setMealEvents([
-        ...enhancedMealEvents.slice(0, indexOfUpdatedMeal),
-        { ...newMeal },
-        ...enhancedMealEvents.slice(indexOfUpdatedMeal + 1),
+      setAdEvents([
+        ...enhancedAdEvents.slice(0, indexOfUpdatedAd),
+        { ...newAd },
+        ...enhancedAdEvents.slice(indexOfUpdatedAd + 1),
       ]);
     },
-    [enhancedMealEvents],
+    [enhancedAdEvents],
   );
   useEffect(() => {
     const fetchContractData = async () => {
@@ -136,7 +136,7 @@ export const useMealData = () => {
           setSuccessFetchingUserEvents(true);
         }
       } catch (e) {
-        console.log('Caught an error while fetching meal events:', e);
+        console.log('Caught an error while fetching ad events:', e);
       }
     };
 
@@ -145,45 +145,45 @@ export const useMealData = () => {
     }
   }, [address, isConnecting]);
 
-  const futureMeals: Meal[] =
-    enhancedMealEvents
+  const futureAds: Ad[] =
+    enhancedAdEvents
       ?.filter(
-        mealEvent => Number(mealEvent.info.time.seconds) * 1000 > Date.now(),
+        adEvent => Number(adEvent.info.time.seconds) * 1000 > Date.now(),
       )
       .slice(0, 7) ?? [];
-  const pastMeals =
-    enhancedMealEvents?.filter(
-      mealEvent => Number(mealEvent.info.time.seconds) * 1000 <= Date.now(),
+  const pastAds =
+    enhancedAdEvents?.filter(
+      adEvent => Number(adEvent.info.time.seconds) * 1000 <= Date.now(),
     ) ?? [];
 
   return {
     isAdmin,
-    pastMeals,
+    pastAds,
     foodieRank,
-    futureMeals,
+    futureAds,
     isAllowedUser,
-    allTimeMealCount,
+    allTimeAdCount,
     loadingAllEvents,
     isSuccessFetchingUserEvents,
-    updateMeal,
+    updateAd,
     setSuccessFetchingUserEvents,
   };
 };
 
-const addUserParticipationToMealEvents = (
-  mealEvents: Meal[],
-  userMealEvents: Meal[],
+const addUserParticipationToAdEvents = (
+  adEvents: Ad[],
+  userAdEvents: Ad[],
 ) => {
-  if (!userMealEvents?.length) {
-    return mealEvents ?? [];
+  if (!userAdEvents?.length) {
+    return adEvents ?? [];
   } else {
-    return mealEvents?.map(meal => {
+    return adEvents?.map(ad => {
       return {
-        ...meal,
+        ...ad,
         info: {
-          ...meal.info,
-          registered: !!userMealEvents?.find(
-            ({ id, info: { registered } }) => meal.id === id && registered,
+          ...ad.info,
+          registered: !!userAdEvents?.find(
+            ({ id, info: { registered } }) => ad.id === id && registered,
           ),
         },
       };
@@ -206,7 +206,7 @@ const extractGlobalStatsFromReport = (
       .findIndex(({ user: trimmedUserAddress }) =>
         user.includes(trimmedUserAddress.toString(16)),
       ) + 1;
-  const allTimeMealCount = Number(
+  const allTimeAdCount = Number(
     walletReport.find(({ user: trimmedUserAddress }) =>
       user.includes(trimmedUserAddress.toString(16)),
     )?.n_participations ?? 0,
@@ -214,6 +214,6 @@ const extractGlobalStatsFromReport = (
 
   return {
     foodieRank,
-    allTimeMealCount,
+    allTimeAdCount,
   };
 };
