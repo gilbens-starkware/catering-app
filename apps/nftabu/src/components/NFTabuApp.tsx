@@ -6,8 +6,10 @@ import { Calendar, PieChart, Users } from 'lucide-react';
 import { AppTabs } from '../types/ui';
 import { UpcomingAdsTab } from './UpcomingAdsTab/UpcomingAdsTab';
 import { StatsTab } from './StatsTab/StatsTab';
+import { PublishNewAdTab } from './PublishNewAdTab/PublishNewAdTab';
+import { MyAdsTab } from './MyAdsTab/MyAdsTab';
 import { useAdData } from '../hooks/useAdData';
-import { ManagementTab } from './ManagementTab/ManagementTab';
+
 
 /// A function to create the main NFTabuApp component.
 export const NFTabuApp = () => {
@@ -22,7 +24,6 @@ export const NFTabuApp = () => {
     isAllowedUser,
     foodieRank,
     allTimeAdCount,
-    isAdmin,
     loadingAllEvents,
     isSuccessFetchingUserEvents,
     updateAd,
@@ -65,12 +66,6 @@ export const NFTabuApp = () => {
             >
               My Ads
             </TabsTrigger>
-            {/* {isAdmin ? (
-              <TabsTrigger value={AppTabs.MANAGEMENT}>
-                <Users className="mr-2 h-4 w-4" />
-                Management
-              </TabsTrigger>
-            ) : null} */}
           </TabsList>
           <TabsContent value={AppTabs.ADS_FOR_SALE} className="space-y-12">
             <UpcomingAdsTab
@@ -85,10 +80,7 @@ export const NFTabuApp = () => {
               isWalletConnected={starknetWallet.isConnected ?? false}
             />
           </TabsContent>
-          <TabsContent
-            value={AppTabs.ADS_FOR_RENT}
-            className="space-y-12"
-          >
+          <TabsContent value={AppTabs.ADS_FOR_RENT} className="space-y-12">
             <StatsTab
               foodieRank={foodieRank}
               allTimeAdCount={allTimeAdCount}
@@ -97,11 +89,24 @@ export const NFTabuApp = () => {
               ads={pastAds}
             />
           </TabsContent>
-          {isAdmin ? (
-            <TabsContent value={AppTabs.MANAGEMENT} className="space-y-12">
-              <ManagementTab />
-            </TabsContent>
-          ) : null}
+          <TabsContent value={AppTabs.PUBLISH_AD} className="space-y-12">
+            <PublishNewAdTab
+              setActiveTab={setActiveTab}
+              // onConnectWallet={onConnectWallet}
+              // isWalletConnected={starknetWallet.isConnected ?? false}
+            />
+          </TabsContent>
+          <TabsContent value={AppTabs.MY_ADS} className="space-y-12">
+            <MyAdsTab
+              foodieRank={foodieRank}
+              allTimeAdCount={allTimeAdCount}
+              setActiveTab={setActiveTab}
+              updateAd={updateAd}
+              ads={pastAds}
+              // onConnectWallet={onConnectWallet}
+              // isWalletConnected={starknetWallet.isConnected ?? false}
+            />
+          </TabsContent>
         </Tabs>
       </main>
     </div>
