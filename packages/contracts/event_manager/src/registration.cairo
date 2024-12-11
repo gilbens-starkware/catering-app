@@ -131,9 +131,10 @@ mod registration {
                     let buyer = get_caller_address();
                     let seller = self.get_info(apartment_id).owner;
                     assert!(sale_info.price == price, "ads");
-                    // TODO: make sure the offer is not expired.
+                    // TODO: Check if timestamp is correct. Should be 24 hours.
                     assert!(
-                        get_block_timestamp() - sale_info.timestamp < 1000, "Offer is expired."
+                        get_block_timestamp() - sale_info.timestamp < 60 * 60 * 24,
+                        "Offer is expired."
                     );
 
                     self.transfer(apartment_id, buyer);
