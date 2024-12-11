@@ -1,8 +1,8 @@
 export type Apt = {
     id: string;
     info: {
-      address: { town: String, street: String, number: number };
-      Owner: String;
+      address: { town: string, street: string, number: number };
+      owner: string;
       area: number;
       floor: number;
     };

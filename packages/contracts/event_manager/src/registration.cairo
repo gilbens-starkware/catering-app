@@ -35,8 +35,8 @@ mod registration {
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, owner: ContractAddress) {
-        self.ownable.initializer(owner);
+    fn constructor(ref self: ContractState) {
+        self.ownable.initializer(get_caller_address());
     }
 
     #[derive(Drop, starknet::Event)]

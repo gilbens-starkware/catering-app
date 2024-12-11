@@ -10,7 +10,7 @@ mod ads {
     };
     use starknet::{ContractAddress, get_caller_address};
     use crate::registration_interface::{
-        IRegistrationLibraryDispatcher, IRegistrationDispatcherTrait
+        IRegistrationDispatcher, IRegistrationDispatcherTrait
     };
     use crate::utils::apartment::{ApartmentInfo, ApartmentId};
     use starknet::contract_address::contract_address_const;
@@ -26,6 +26,7 @@ mod ads {
     #[storage]
     struct Storage {
         ads: Map<AdId, Option<AdInfo>>,
+        registration_contract_addr: ContractAddress,
         #[substorage(v0)]
         ownable: OwnableComponent::Storage,
     }
@@ -39,8 +40,9 @@ mod ads {
 
 
     #[constructor]
-    fn constructor(ref self: ContractState, owner: ContractAddress) {
-        self.ownable.initializer(owner);
+    fn constructor(ref self: ContractState, registration_contract_addr: ContractAddress) {
+        self.ownable.initializer(get_caller_address());
+        self.registration_contract_addr.write(registration_contract_addr);
     }
 
     #[abi(embed_v0)]
@@ -65,7 +67,7 @@ mod ads {
                 panic!("Only ads of apartments are currently supported")
             };
 
-            let real_owner = get_real_apartment_owner(apartment_id);
+            let real_owner = get_real_apartment_owner(apartment_id, self.registration_contract_addr.read());
             assert!(@real_owner == apartment_info.owner, "This is not your asset to publish!!");
 
             let entry = self.ads.entry(ad_id);
@@ -95,12 +97,9 @@ mod ads {
         }
     }
 
-    // TODO: class hash
-    const REGISTRATION_CONTRACT_CLASS_HASH: felt252 = 3;
 
-    fn get_real_apartment_owner(apartment_id: ApartmentId) -> ContractAddress {
-        let class_hash = REGISTRATION_CONTRACT_CLASS_HASH.try_into().unwrap();
-        let real_apartment_info = IRegistrationLibraryDispatcher { class_hash }
+    fn get_real_apartment_owner(apartment_id: ApartmentId, contract_address: ContractAddress) -> ContractAddress {
+        let real_apartment_info = IRegistrationDispatcher { contract_address }
             .get_info(id: apartment_id);
         real_apartment_info.owner
     }
