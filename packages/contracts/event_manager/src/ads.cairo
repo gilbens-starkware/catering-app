@@ -9,9 +9,7 @@ mod ads {
         MutableVecTrait,
     };
     use starknet::{ContractAddress, get_caller_address};
-    use crate::registration_interface::{
-        IRegistrationDispatcher, IRegistrationDispatcherTrait
-    };
+    use crate::registration_interface::{IRegistrationDispatcher, IRegistrationDispatcherTrait};
     use crate::utils::apartment::{ApartmentInfo, ApartmentId};
     use starknet::contract_address::contract_address_const;
     use openzeppelin_access::ownable::OwnableComponent;
@@ -47,6 +45,9 @@ mod ads {
 
     #[abi(embed_v0)]
     impl AdsImpl of IAds<ContractState> {
+        fn get_ad_info(self: @ContractState, ad_id: AdId) -> Option<AdInfo> {
+            self.ads.read(ad_id)
+        }
         // TODO: revisit how to create the ID.
         // TODO: revisit snapshots...
         fn publish_ad(ref self: ContractState, ad_id: AdId, ad_info: AdInfo) {
@@ -67,7 +68,9 @@ mod ads {
                 panic!("Only ads of apartments are currently supported")
             };
 
-            let real_owner = get_real_apartment_owner(apartment_id, self.registration_contract_addr.read());
+            let real_owner = get_real_apartment_owner(
+                apartment_id, self.registration_contract_addr.read()
+            );
             assert!(@real_owner == apartment_info.owner, "This is not your asset to publish!!");
 
             let entry = self.ads.entry(ad_id);
@@ -98,7 +101,9 @@ mod ads {
     }
 
 
-    fn get_real_apartment_owner(apartment_id: ApartmentId, contract_address: ContractAddress) -> ContractAddress {
+    fn get_real_apartment_owner(
+        apartment_id: ApartmentId, contract_address: ContractAddress
+    ) -> ContractAddress {
         let real_apartment_info = IRegistrationDispatcher { contract_address }
             .get_info(id: apartment_id);
         real_apartment_info.owner
