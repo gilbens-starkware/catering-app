@@ -4,6 +4,7 @@ struct OfferInfo {
     // TODO: need to add seller?
     buyer: ContractAddress,
     price: u128,
+    timestamp: u64,
 }
 
 #[starknet::contract]
@@ -117,7 +118,8 @@ mod registration {
             // Assert there is no other offer for this apartment.
             assert!(sale_entry.read().is_none(), "There is an existing sale for this apartment");
 
-            sale_entry.write(Option::Some(OfferInfo { buyer, price }));
+            sale_entry
+                .write(Option::Some(OfferInfo { buyer, price, timestamp: get_block_timestamp() }));
         }
 
         fn buy(ref self: ContractState, apartment_id: ApartmentId, price: u128) {
@@ -129,6 +131,10 @@ mod registration {
                     let buyer = get_caller_address();
                     let seller = self.get_info(apartment_id).owner;
                     assert!(sale_info.price == price, "ads");
+                    // TODO: make sure the offer is not expired.
+                    assert!(
+                        get_block_timestamp() - sale_info.timestamp < 1000, "Offer is expired."
+                    );
 
                     self.transfer(apartment_id, buyer);
 
