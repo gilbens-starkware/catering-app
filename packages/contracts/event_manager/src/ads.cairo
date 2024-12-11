@@ -38,8 +38,8 @@ mod ads {
 
 
     #[constructor]
-    fn constructor(ref self: ContractState, registration_contract_addr: ContractAddress) {
-        self.ownable.initializer(get_caller_address());
+    fn constructor(ref self: ContractState, owner: ContractAddress, registration_contract_addr: ContractAddress) {
+        self.ownable.initializer(owner);
         self.registration_contract_addr.write(registration_contract_addr);
     }
 
