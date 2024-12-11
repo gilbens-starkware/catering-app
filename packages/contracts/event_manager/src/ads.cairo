@@ -13,10 +13,33 @@ mod ads {
     };
     use crate::utils::apartment::{ApartmentInfo, ApartmentId};
     use starknet::contract_address::contract_address_const;
+    use openzeppelin_access::ownable::OwnableComponent;
+
+    component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
+
+    #[abi(embed_v0)]
+    impl OwnableImpl = OwnableComponent::OwnableImpl<ContractState>;
+    impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
+
 
     #[storage]
     struct Storage {
         ads: Map<AdId, Option<AdInfo>>,
+        #[substorage(v0)]
+        ownable: OwnableComponent::Storage,
+    }
+
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        #[flat]
+        OwnableEvent: OwnableComponent::Event,
+    }
+
+
+    #[constructor]
+    fn constructor(ref self: ContractState, owner: ContractAddress) {
+        self.ownable.initializer(owner);
     }
 
     #[abi(embed_v0)]
@@ -62,7 +85,8 @@ mod ads {
                 panic!("Only ads of apartments are currently supported")
             };
             assert!(
-                apartment_info.owner == get_caller_address(),
+                apartment_info.owner == get_caller_address()
+                    || self.ownable.owner() != get_caller_address(),
                 "Only the owner of the asset can remove an ad of it",
             );
             entry.write(Option::None);
