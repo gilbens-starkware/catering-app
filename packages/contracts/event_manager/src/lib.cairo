@@ -1,2 +1,3 @@
-mod event_manager;
+mod ads;
+mod registration;
 mod utils;
