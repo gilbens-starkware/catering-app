@@ -1,14 +1,6 @@
-use crate::utils::ad::{AdInfo, AdId};
-
-#[starknet::interface]
-trait IAds<ContractState> {
-    fn publish_ad(ref self: ContractState, ad_id: AdId, ad_info: AdInfo);
-    fn remove_ad(ref self: ContractState, ad_id: AdId) -> bool;
-}
-
 #[starknet::contract]
 mod ads {
-    use super::{IAds};
+    use crate::ads_interface::IAds;
     use crate::utils::ad::{AdInfo, AdId, Asset, AssetId};
     use starknet::storage::{
         Map, Vec, StorageAsPointer, StoragePathEntry, StorageMapReadAccess,
@@ -16,7 +8,9 @@ mod ads {
         MutableVecTrait,
     };
     use starknet::{ContractAddress, get_caller_address};
-    use crate::registration::{IRegistrationLibraryDispatcher, IRegistrationDispatcherTrait};
+    use crate::registration_interface::{
+        IRegistrationLibraryDispatcher, IRegistrationDispatcherTrait
+    };
     use crate::utils::apartment::{ApartmentInfo, ApartmentId};
     use starknet::contract_address::contract_address_const;
 

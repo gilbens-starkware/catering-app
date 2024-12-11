@@ -1,27 +1,3 @@
-use crate::utils::apartment::{ApartmentInfo, ApartmentId};
-use starknet::ContractAddress;
-
-
-// TODO: move to another module
-#[starknet::interface]
-pub trait IRegistration<ContractState> {
-    fn register_apartment(ref self: ContractState, id: ApartmentId, apartment_info: ApartmentInfo);
-
-    fn transfer(ref self: ContractState, id: ApartmentId, new_owner: ContractAddress);
-
-    fn get_info(ref self: ContractState, id: ApartmentId) -> ApartmentInfo;
-}
-
-#[derive(Drop, starknet::Event)]
-struct EventTransfer {
-    #[key]
-    property: ApartmentId,
-    prevOwner: ContractAddress,
-    newOwner: ContractAddress,
-    timestamp: u64,
-}
-
-
 #[starknet::contract]
 mod registration {
     use openzeppelin_access::ownable::OwnableComponent;
@@ -31,7 +7,7 @@ mod registration {
         MutableVecTrait,
     };
     use starknet::{ContractAddress, get_caller_address, get_block_timestamp};
-    use super::{EventTransfer, IRegistration};
+    use crate::registration_interface::IRegistration;
 
     use crate::utils::apartment::{ApartmentId, ApartmentInfo};
 
@@ -61,6 +37,15 @@ mod registration {
     #[constructor]
     fn constructor(ref self: ContractState, owner: ContractAddress) {
         self.ownable.initializer(owner);
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct EventTransfer {
+        #[key]
+        property: ApartmentId,
+        prevOwner: ContractAddress,
+        newOwner: ContractAddress,
+        timestamp: u64,
     }
 
     // Implementing the contract interface. #[abi(embed_v0)] is used to indicate that the functions
