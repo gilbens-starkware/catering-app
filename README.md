@@ -192,3 +192,21 @@ export const SomeComponent = () => {
   return <button onClick={onClick}>click me</button>;
 };
 ```
+
+### NFTabu design
+
+```
+Ad fields:
+  core fields (immutable, defined on creation):
+    AdId
+    AssetOwner
+    AssetAddress (and any details registered on the Tabu, such as no. of rooms etc.)
+  user provided fields (possibly mutable, determined after ad is created):
+    Listing type (for sale/for rent)
+    Asking price
+    Entry date (when can you move in)
+    Owner contact details (e.g. phone number)
+    Ad publication date (and/or update date)
+    Description (free text)
+    Pictures []
+```
