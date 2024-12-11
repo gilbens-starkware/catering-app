@@ -14,11 +14,15 @@ mod registration {
         StoragePointerWriteAccess, StoragePointerReadAccess, StorageMapWriteAccess, VecTrait,
         MutableVecTrait,
     };
-    use starknet::{ContractAddress, get_caller_address, get_block_timestamp};
+    use starknet::{
+        ContractAddress, contract_address_const, get_caller_address, get_block_timestamp
+    };
     use crate::registration_interface::IRegistration;
     use super::OfferInfo;
-
     use crate::utils::apartment::{ApartmentId, ApartmentInfo};
+    use openzeppelin_token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
+
+    const ETH_ADDRESS: felt252 = 0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7;
 
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
 
@@ -125,11 +129,15 @@ mod registration {
                     let buyer = get_caller_address();
                     let seller = self.get_info(apartment_id).owner;
                     assert!(sale_info.price == price, "ads");
-                    //TODO: do we need to assert the buyer has enough money?
 
                     self.transfer(apartment_id, buyer);
 
-                    //TODO: pass the money from the buyer to the seller -- need external contract??
+                    let erc20_address = contract_address_const::<ETH_ADDRESS>();
+                    assert!(
+                        IERC20Dispatcher { contract_address: erc20_address }
+                            .transfer_from(sender: buyer, recipient: seller, amount: price.into()),
+                        "Could not transfer money from buyer"
+                    );
 
                     sale_entry.write(Option::None);
                 }
