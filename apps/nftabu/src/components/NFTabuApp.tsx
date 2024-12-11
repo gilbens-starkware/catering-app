@@ -9,8 +9,8 @@ import { StatsTab } from './StatsTab/StatsTab';
 import { useMealData } from '../hooks/useMealData';
 import { ManagementTab } from './ManagementTab/ManagementTab';
 
-/// A function to create the main StarkitchenApp component.
-export const StarkitchenApp = () => {
+/// A function to create the main NFTabuApp component.
+export const NFTabuApp = () => {
   const starknetWallet = useAccount();
   /// useState is a React hook that allows you to have state variables which can be accessed and updated in your component.
   /// In this case, we can access the activeTab value through the activeTab variable.

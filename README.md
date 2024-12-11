@@ -1,4 +1,4 @@
-# Welcome to the StarKitchen app monorepo
+# Welcome to the nftabu app monorepo
 
 This repo contains an example of an app built on top of Starknet using React and Cairo.
 The main goal of this repo is to be used as a template for your Starknet app.
@@ -34,26 +34,26 @@ Follow these steps to get started with the monorepo and set up your project:
      ```
 
 6. **Update Application Name (optional)**
-   - Replace all occurrences of `"catering-app"` and `"starkitchen"` in the repository with your desired application name. This may include package names, configurations, or deployment references.
+   - Replace all occurrences of `"nftabu-app"` and `"nftabu"` in the repository with your desired application name. This may include package names, configurations, or deployment references.
 
 
 7. **Customize Functionality**
-   - Navigate to the `apps/starkitchen` folder:
+   - Navigate to the `apps/nftabu` folder:
      ```bash
-     cd apps/starkitchen
+     cd apps/nftabu
      ```
    - Start adding or removing functionality to tailor it to your app's requirements. **Important:** Do not delete the `components/ui` folder, as it contains essential UI components.
    - You can use tools like [https://v0.dev](https://v0.dev) or similar to play around and decide on the design and aesthetics of your project.
 
 9. **Run the App**
    - Start the app using one of the following commands:
-     - From the `apps/starkitchen` directory:
+     - From the `apps/nftabu` directory:
        ```bash
        pnpm run dev
        ```
      - From the monorepo root:
        ```bash
-       pnpm run dev:starkitchen
+       pnpm run dev:nftabu
        ```
 
 ### IMPORTANT: Deployment
@@ -71,7 +71,7 @@ Follow these steps to get started with the monorepo and set up your project:
    - Check the `package.json` file for other available scripts and explore their functionality.
 
 4. **Check your deployed app**
-  - You can see your app live on {your-github-username}.github.io/{repo-name} for example: gilbens-starkware.github.io/catering-app
+  - You can see your app live on {your-github-username}.github.io/{repo-name} for example: gilbens-starkware.github.io/nftabu-app
 ---
 
 ### Working With the contracts:
