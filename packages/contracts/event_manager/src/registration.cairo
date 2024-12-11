@@ -24,6 +24,7 @@ struct EventTransfer {
 
 #[starknet::contract]
 mod registration {
+    use openzeppelin_access::ownable::OwnableComponent;
     use starknet::storage::{
         Map, Vec, StorageAsPointer, StoragePathEntry, StorageMapReadAccess,
         StoragePointerWriteAccess, StoragePointerReadAccess, StorageMapWriteAccess, VecTrait,
@@ -34,17 +35,32 @@ mod registration {
 
     use crate::utils::apartment::{ApartmentId, ApartmentInfo};
 
+    component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
+
+    #[abi(embed_v0)]
+    impl OwnableImpl = OwnableComponent::OwnableImpl<ContractState>;
+    impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
+
 
     #[storage]
     struct Storage {
         /// A map from ApartmentId to ApartmentInfo.
         apt: Map<ApartmentId, Option<ApartmentInfo>>,
+        #[substorage(v0)]
+        ownable: OwnableComponent::Storage,
     }
 
     #[event]
     #[derive(Drop, starknet::Event)]
     enum Event {
+        #[flat]
+        OwnableEvent: OwnableComponent::Event,
         EventTransfer: EventTransfer,
+    }
+
+    #[constructor]
+    fn constructor(ref self: ContractState, owner: ContractAddress) {
+        self.ownable.initializer(owner);
     }
 
     // Implementing the contract interface. #[abi(embed_v0)] is used to indicate that the functions
@@ -55,6 +71,7 @@ mod registration {
         fn register_apartment(
             ref self: ContractState, id: ApartmentId, apartment_info: ApartmentInfo,
         ) {
+            self.ownable.assert_only_owner();
             let entry = self.apt.entry(id);
             assert!(entry.read().is_none(), "Apartment already exists");
 
