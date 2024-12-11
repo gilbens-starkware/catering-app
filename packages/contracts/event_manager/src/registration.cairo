@@ -1,3 +1,11 @@
+use starknet::ContractAddress;
+#[derive(Serde, Drop, starknet::Store)]
+struct OfferInfo {
+    // TODO: need to add seller?
+    buyer: ContractAddress,
+    price: u128,
+}
+
 #[starknet::contract]
 mod registration {
     use openzeppelin_access::ownable::OwnableComponent;
@@ -8,6 +16,7 @@ mod registration {
     };
     use starknet::{ContractAddress, get_caller_address, get_block_timestamp};
     use crate::registration_interface::IRegistration;
+    use super::OfferInfo;
 
     use crate::utils::apartment::{ApartmentId, ApartmentInfo};
 
@@ -22,6 +31,7 @@ mod registration {
     struct Storage {
         /// A map from ApartmentId to ApartmentInfo.
         apt: Map<ApartmentId, Option<ApartmentInfo>>,
+        sale_offers: Map<ApartmentId, Option<OfferInfo>>,
         #[substorage(v0)]
         ownable: OwnableComponent::Storage,
     }
@@ -87,6 +97,43 @@ mod registration {
 
         fn get_info(self: @ContractState, id: ApartmentId) -> ApartmentInfo {
             self.apt.read(id).expect('Apartment does not exist')
+        }
+
+        fn offer_sale(
+            ref self: ContractState, apartment_id: ApartmentId, buyer: ContractAddress, price: u128
+        ) {
+            // Assert the caller owns the apartment.
+            assert!(
+                self.get_info(apartment_id).owner == get_caller_address(),
+                "You are not the owner of this apartment!"
+            );
+
+            let sale_entry = self.sale_offers.entry(apartment_id);
+
+            // Assert there is no other offer for this apartment.
+            assert!(sale_entry.read().is_none(), "There is an existing sale for this apartment");
+
+            sale_entry.write(Option::Some(OfferInfo { buyer, price }));
+        }
+
+        fn buy(ref self: ContractState, apartment_id: ApartmentId, price: u128) {
+            let sale_entry = self.sale_offers.entry(apartment_id);
+
+            match sale_entry.read() {
+                Option::None => { panic!("No matching sale offer"); },
+                Option::Some(sale_info) => {
+                    let buyer = get_caller_address();
+                    let seller = self.get_info(apartment_id).owner;
+                    assert!(sale_info.price == price, "ads");
+                    //TODO: do we need to assert the buyer has enough money?
+
+                    self.transfer(apartment_id, buyer);
+
+                    //TODO: pass the money from the buyer to the seller -- need external contract??
+
+                    sale_entry.write(Option::None);
+                }
+            }
         }
     }
 }
