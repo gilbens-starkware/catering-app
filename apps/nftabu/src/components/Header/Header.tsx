@@ -37,10 +37,10 @@ export const Header = ({
           <div className="flex items-center space-x-4 mb-4 md:mb-0">
             <img
               src={`${SrcPrefix}/nftabu-logo-transparent.png`}
-              alt="StarKitchen Logo"
+              alt="NFTabu Logo"
               className="h-12"
             />
-            <h1 className="text-3xl font-bold text-gray-900">StarKitchen</h1>
+            <h1 className="text-3xl font-bold text-gray-900">NFTabu</h1>
           </div>
           <div className="flex items-center space-x-4">
             {wallet?.isConnected ? (

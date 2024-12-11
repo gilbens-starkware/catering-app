@@ -1,6 +1,6 @@
 /// A component that catches errors in its children and renders a fallback UI.
 /// This component is special and uses class components to manage errors. Most components should
-/// use function components. For a detailed function component example see [StarkitchenApp.tsx].
+/// use function components. For a detailed function component example see [NFTabuApp.tsx].
 
 import React, { ReactNode } from 'react';
 

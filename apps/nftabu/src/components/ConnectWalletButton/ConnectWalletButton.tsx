@@ -75,7 +75,7 @@ const ConnectWalletDialog = ({
             Connect Wallet
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Choose a wallet to connect with StarKitchen.
+            Choose a wallet to connect with NFTabu.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="max-h-[400px] overflow-y-auto py-4 pr-4 -mr-4">
