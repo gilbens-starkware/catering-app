@@ -1,13 +1,13 @@
 {
-  "name": "catering-app",
+  "name": "nftabu-app",
   "private": true,
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev:starkitchen": "pnpm --filter @catering-app/starkitchen dev",
-    "build:starkitchen": "pnpm --filter @catering-app/starkitchen build",
-    "preview:starkitchen": "pnpm --filter @catering-app/starkitchen preview",
-    "deploy:starkitchen": "pnpm --filter @catering-app/starkitchen run deploy"
+    "dev:nftabu": "pnpm --filter @nftabu-app/nftabu dev",
+    "build:nftabu": "pnpm --filter @nftabu-app/nftabu build",
+    "preview:nftabu": "pnpm --filter @nftabu-app/nftabu preview",
+    "deploy:nftabu": "pnpm --filter @nftabu-app/nftabu run deploy"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -15,6 +15,6 @@
   "workspaces": [
     "packages/contracts",
     "packages/starknet-contract-connect",
-    "apps/starkitchen"
+    "apps/nftabu"
   ]
 }
