@@ -2,8 +2,9 @@ use crate::utils::apartment::{ApartmentInfo, ApartmentId};
 use starknet::ContractAddress;
 
 
+// TODO: move to another module
 #[starknet::interface]
-trait IRegistration<ContractState> {
+pub trait IRegistration<ContractState> {
     fn register_apartment(ref self: ContractState, id: ApartmentId, apartment_info: ApartmentInfo);
 
     fn transfer(ref self: ContractState, id: ApartmentId, new_owner: ContractAddress);
