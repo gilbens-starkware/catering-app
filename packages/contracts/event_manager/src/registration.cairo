@@ -85,7 +85,7 @@ mod registration {
         }
 
 
-        fn get_info(ref self: ContractState, id: ApartmentId) -> ApartmentInfo {
+        fn get_info(self: @ContractState, id: ApartmentId) -> ApartmentInfo {
             self.apt.read(id).expect('Apartment does not exist')
         }
     }

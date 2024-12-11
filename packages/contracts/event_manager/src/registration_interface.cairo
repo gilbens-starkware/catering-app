@@ -7,5 +7,5 @@ pub trait IRegistration<ContractState> {
 
     fn transfer(ref self: ContractState, id: ApartmentId, new_owner: ContractAddress);
 
-    fn get_info(ref self: ContractState, id: ApartmentId) -> ApartmentInfo;
+    fn get_info(self: @ContractState, id: ApartmentId) -> ApartmentInfo;
 }
