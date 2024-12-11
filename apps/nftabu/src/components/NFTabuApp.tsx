@@ -15,7 +15,7 @@ export const NFTabuApp = () => {
   /// useState is a React hook that allows you to have state variables which can be accessed and updated in your component.
   /// In this case, we can access the activeTab value through the activeTab variable.
   /// We can also update the activeTab value by calling the setActiveTab function. This will cause the component to re-render.
-  const [activeTab, setActiveTab] = useState<string>(AppTabs.AD_REGISTRATION);
+  const [activeTab, setActiveTab] = useState<string>(AppTabs.ADS_FOR_SALE);
   const {
     pastAds,
     futureAds,
@@ -43,25 +43,36 @@ export const NFTabuApp = () => {
           className="space-y-4"
         >
           <TabsList>
-            <TabsTrigger value={AppTabs.AD_REGISTRATION}>
-              <Calendar className="mr-2 h-4 w-4" />
-              Ad Registration
+            <TabsTrigger
+              value={AppTabs.ADS_FOR_SALE}
+            >
+              Ads For Sale
+            </TabsTrigger>
+            <TabsTrigger
+              value={AppTabs.ADS_FOR_RENT}
+            >
+              Ads For Rent
             </TabsTrigger>
             <TabsTrigger
               disabled={!starknetWallet.isConnected}
-              value={AppTabs.STATS_AND_PREV_ADS}
+              value={AppTabs.PUBLISH_AD}
             >
-              <PieChart className="mr-2 h-4 w-4" />
-              History & Stats
+              Publish Ad
             </TabsTrigger>
-            {isAdmin ? (
+            <TabsTrigger
+              disabled={!starknetWallet.isConnected}
+              value={AppTabs.MY_ADS}
+            >
+              My Ads
+            </TabsTrigger>
+            {/* {isAdmin ? (
               <TabsTrigger value={AppTabs.MANAGEMENT}>
                 <Users className="mr-2 h-4 w-4" />
                 Management
               </TabsTrigger>
-            ) : null}
+            ) : null} */}
           </TabsList>
-          <TabsContent value={AppTabs.AD_REGISTRATION} className="space-y-12">
+          <TabsContent value={AppTabs.ADS_FOR_SALE} className="space-y-12">
             <UpcomingAdsTab
               updateAd={updateAd}
               loadingAllEvents={loadingAllEvents}
@@ -75,7 +86,7 @@ export const NFTabuApp = () => {
             />
           </TabsContent>
           <TabsContent
-            value={AppTabs.STATS_AND_PREV_ADS}
+            value={AppTabs.ADS_FOR_RENT}
             className="space-y-12"
           >
             <StatsTab

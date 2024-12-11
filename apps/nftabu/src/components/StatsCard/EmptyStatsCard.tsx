@@ -9,7 +9,7 @@ export const EmptyStatsCard = ({
   setActiveTab: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const handleNavigateToUpcomingAds = () => {
-    setActiveTab(AppTabs.AD_REGISTRATION);
+    setActiveTab(AppTabs.ADS_FOR_SALE);
   };
 
   return (
