@@ -1,7 +1,8 @@
 #[starknet::contract]
 mod ads {
     use crate::ads_interface::IAds;
-    use crate::utils::ad::{AdInfo, AdId, Asset, AssetId};
+    use crate::utils::ad::{AdInfo, AdId};
+    use crate::utils::asset::{AssetInfo, AssetId};
     use starknet::storage::{
         Map, Vec, StorageAsPointer, StoragePathEntry, StorageMapReadAccess,
         StoragePointerWriteAccess, StoragePointerReadAccess, StorageMapWriteAccess, VecTrait,
@@ -47,7 +48,7 @@ mod ads {
         // TODO: revisit how to create the ID.
         // TODO: revisit snapshots...
         fn publish_ad(ref self: ContractState, ad_id: AdId, ad_info: AdInfo) {
-            let apartment_info = if let Asset::Apartment(apartment_info) = @ad_info.asset {
+            let apartment_info = if let AssetInfo::Apartment(apartment_info) = @ad_info.asset {
                 apartment_info
             } else {
                 panic!("Only ads of apartments are currently supported")
@@ -79,7 +80,7 @@ mod ads {
                 Option::None => { return bool::False; },
                 Option::Some(ad_info) => { ad_info },
             };
-            let apartment_info = if let Asset::Apartment(apartment_info) = ad_info.asset {
+            let apartment_info = if let AssetInfo::Apartment(apartment_info) = ad_info.asset {
                 apartment_info
             } else {
                 panic!("Only ads of apartments are currently supported")
@@ -94,9 +95,11 @@ mod ads {
         }
     }
 
+    // TODO: class hash
+    const REGISTRATION_CONTRACT_CLASS_HASH: felt252 = 3;
+
     fn get_real_apartment_owner(apartment_id: ApartmentId) -> ContractAddress {
-        // TODO: class hash
-        let class_hash = 3_felt252.try_into().unwrap();
+        let class_hash = REGISTRATION_CONTRACT_CLASS_HASH.try_into().unwrap();
         let real_apartment_info = IRegistrationLibraryDispatcher { class_hash }
             .get_info(id: apartment_id);
         real_apartment_info.owner
