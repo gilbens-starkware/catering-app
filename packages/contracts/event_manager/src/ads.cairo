@@ -24,6 +24,7 @@ mod ads {
     #[storage]
     struct Storage {
         ads: Map<AdId, Option<AdInfo>>,
+        next_id: u128,
         registration_contract_addr: ContractAddress,
         #[substorage(v0)]
         ownable: OwnableComponent::Storage,
@@ -52,7 +53,7 @@ mod ads {
         }
         // TODO: revisit how to create the ID.
         // TODO: revisit snapshots...
-        fn publish_ad(ref self: ContractState, ad_id: AdId, ad_info: AdInfo) {
+        fn publish_ad(ref self: ContractState, ad_info: AdInfo) {
             let apartment_info = if let AssetInfo::Apartment(apartment_info) = @ad_info.asset {
                 apartment_info
             } else {
@@ -82,10 +83,9 @@ mod ads {
                 "The asset info is not correct"
             );
 
-            let entry = self.ads.entry(ad_id);
-            assert!(entry.read().is_none(), "An ad with this ID already exists");
+            let ad_id = self.next_id();
 
-            entry.write(Option::Some(ad_info));
+            self.ads.write(ad_id, Option::Some(ad_info));
         }
 
         fn remove_ad(ref self: ContractState, ad_id: AdId) -> bool {
@@ -107,6 +107,10 @@ mod ads {
             entry.write(Option::None);
             bool::True
         }
+
+        fn get_next_id(self: @ContractState) -> u128 {
+            self.next_id.read()
+        }
     }
 
     fn get_apartment_info(
@@ -119,5 +123,14 @@ mod ads {
         apartment_id: ApartmentId, contract_address: ContractAddress
     ) -> ContractAddress {
         get_apartment_info(apartment_id, contract_address).owner
+    }
+
+    #[generate_trait]
+    impl PrivateImpl of PrivateTrait {
+        fn next_id(ref self: ContractState) -> AdId {
+            let res = self.next_id.read();
+            self.next_id.write(res + 1);
+            res
+        }
     }
 }
