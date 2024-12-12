@@ -38,7 +38,9 @@ mod ads {
 
 
     #[constructor]
-    fn constructor(ref self: ContractState, owner: ContractAddress, registration_contract_addr: ContractAddress) {
+    fn constructor(
+        ref self: ContractState, owner: ContractAddress, registration_contract_addr: ContractAddress
+    ) {
         self.ownable.initializer(owner);
         self.registration_contract_addr.write(registration_contract_addr);
     }
@@ -73,6 +75,13 @@ mod ads {
             );
             assert!(@real_owner == apartment_info.owner, "This is not your asset to publish!!");
 
+            assert!(
+                apartment_info == @get_apartment_info(
+                    apartment_id, self.registration_contract_addr.read()
+                ),
+                "The asset info is not correct"
+            );
+
             let entry = self.ads.entry(ad_id);
             assert!(entry.read().is_none(), "An ad with this ID already exists");
 
@@ -100,12 +109,15 @@ mod ads {
         }
     }
 
+    fn get_apartment_info(
+        apartment_id: ApartmentId, contract_address: ContractAddress
+    ) -> ApartmentInfo {
+        IRegistrationDispatcher { contract_address }.get_info(id: apartment_id)
+    }
 
     fn get_real_apartment_owner(
         apartment_id: ApartmentId, contract_address: ContractAddress
     ) -> ContractAddress {
-        let real_apartment_info = IRegistrationDispatcher { contract_address }
-            .get_info(id: apartment_id);
-        real_apartment_info.owner
+        get_apartment_info(apartment_id, contract_address).owner
     }
 }

@@ -1,13 +1,9 @@
 use starknet::ContractAddress;
 
-#[derive(Serde, Drop, starknet::Store)]
+#[derive(Serde, Drop, starknet::Store, PartialEq)]
 pub struct ApartmentInfo {
     pub owner: ContractAddress,
-    pub address: (
-        felt252,
-        felt252,
-        felt252,
-    ),
+    pub address: (felt252, felt252, felt252,),
     area: felt252,
     floor: felt252,
 }
