@@ -1,13 +1,12 @@
-use crate::utils::asset::{AssetInfo, AssetId};
-use super::apartment::ApartmentInfo;
+use super::apartment::{ApartmentInfo, ApartmentId};
 
 pub type AdId = u128;
 
 #[derive(Serde, Drop, starknet::Store)]
 pub struct AdInfo {
-    pub asset_id: AssetId,
+    pub apartment_id: ApartmentId,
     // TODO: should we only have the ID?
-    pub asset: AssetInfo,
+    pub apartment: ApartmentInfo,
     pub is_sale: bool,
     pub price: felt252,
     pub publication_date: felt252,

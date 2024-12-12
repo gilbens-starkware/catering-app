@@ -2,7 +2,6 @@
 mod ads {
     use crate::ads_interface::IAds;
     use crate::utils::ad::{AdInfo, AdId};
-    use crate::utils::asset::{AssetInfo, AssetId};
     use starknet::storage::{
         Map, Vec, StorageAsPointer, StoragePathEntry, StorageMapReadAccess,
         StoragePointerWriteAccess, StoragePointerReadAccess, StorageMapWriteAccess, VecTrait,
@@ -55,33 +54,24 @@ mod ads {
         // TODO: revisit how to create the ID.
         // TODO: revisit snapshots...
         fn publish_ad(ref self: ContractState, ad_info: AdInfo) {
-            let apartment_info = if let AssetInfo::Apartment(apartment_info) = @ad_info.asset {
-                apartment_info
-            } else {
-                panic!("Only ads of apartments are currently supported")
-            };
-            // TODO: move the owner out of the asset and remove this check.
+            let apartment_info = @ad_info.apartment;
             assert!(
                 apartment_info.owner == @get_caller_address(),
-                "Owner in the asset is not the caller"
+                "Owner in the apartment is not the caller"
             );
 
-            let apartment_id = if let AssetId::Apartment(apartment_id) = ad_info.asset_id {
-                apartment_id
-            } else {
-                panic!("Only ads of apartments are currently supported")
-            };
+            let apartment_id = ad_info.apartment_id;
 
             let real_owner = get_real_apartment_owner(
                 apartment_id, self.registration_contract_addr.read()
             );
-            assert!(@real_owner == apartment_info.owner, "This is not your asset to publish!!");
+            assert!(@real_owner == apartment_info.owner, "This is not your apartment to publish!!");
 
             assert!(
                 apartment_info == @get_apartment_info(
                     apartment_id, self.registration_contract_addr.read()
                 ),
-                "The asset info is not correct"
+                "The apartment info is not correct"
             );
 
             let ad_id = self.next_id();
@@ -95,15 +85,11 @@ mod ads {
                 Option::None => { return bool::False; },
                 Option::Some(ad_info) => { ad_info },
             };
-            let apartment_info = if let AssetInfo::Apartment(apartment_info) = ad_info.asset {
-                apartment_info
-            } else {
-                panic!("Only ads of apartments are currently supported")
-            };
+            let apartment_info = ad_info.apartment;
+            let caller_address = get_caller_address();
             assert!(
-                apartment_info.owner == get_caller_address()
-                    || self.ownable.owner() != get_caller_address(),
-                "Only the owner of the asset can remove an ad of it",
+                apartment_info.owner == caller_address || self.ownable.owner() == caller_address,
+                "Only the owner of the apartment can remove an ad of it",
             );
             entry.write(Option::None);
             bool::True
@@ -152,8 +138,8 @@ mod ads {
                 }
                 let apt_info = nftabu.get_info(id: num);
                 let ad_info = AdInfo {
-                    asset_id: AssetId::Apartment(num),
-                    asset: AssetInfo::Apartment(apt_info),
+                    apartment_id: num,
+                    apartment: apt_info,
                     is_sale: true,
                     price: 100,
                     publication_date: 5,
@@ -162,10 +148,10 @@ mod ads {
                     picture_url: "https://dummyurl.com",
                 };
                 self.ads.write(num, Option::Some(ad_info));
+                num += 1
             };
             self.next_id.write(num);
         }
-    
     }
 
     fn get_apartment_info(
