@@ -3,7 +3,7 @@ import { Abi } from '@starknet-react/core';
 
 /// The address of the deployed contract.
 export const ADS_CONTRACT_ADDRESS =
-  '0x06507d712f6630e04de57e35d86e74d571d8a56064c237525a901c582a55f7ce';
+  '0x07fa997e493dc9c4c2bba77a598580adc1dca4d8d2e40311c4da369e005d11a2';
 /// The ABI of the deployed contract. Can be found on starkscan.
 /// For the above contract, the ABI can be found at:
 /// https://sepolia.starkscan.co/contract/0x06507d712f6630e04de57e35d86e74d571d8a56064c237525a901c582a55f7ce
@@ -141,6 +141,16 @@ export const ADS_ABI = [
     ]
   },
   {
+    "name": "core::array::Span::<(core::integer::u128, event_manager::utils::ad::AdInfo)>",
+    "type": "struct",
+    "members": [
+      {
+        "name": "snapshot",
+        "type": "@core::array::Array::<(core::integer::u128, event_manager::utils::ad::AdInfo)>"
+      }
+    ]
+  },
+  {
     "name": "event_manager::ads_interface::IAds",
     "type": "interface",
     "items": [
@@ -200,6 +210,13 @@ export const ADS_ABI = [
         "state_mutability": "view"
       },
       {
+        "name": "dummy_ads",
+        "type": "function",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
         "name": "offer_sale",
         "type": "function",
         "inputs": [
@@ -234,6 +251,17 @@ export const ADS_ABI = [
         ],
         "outputs": [],
         "state_mutability": "external"
+      },
+      {
+        "name": "get_all_ads",
+        "type": "function",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Span::<(core::integer::u128, event_manager::utils::ad::AdInfo)>"
+          }
+        ],
+        "state_mutability": "view"
       }
     ]
   },

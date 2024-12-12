@@ -44,6 +44,7 @@ mod ads {
     ) {
         self.ownable.initializer(owner);
         self.registration_contract_addr.write(registration_contract_addr);
+        // self.dummy_ads();
     }
 
     #[abi(embed_v0)]
@@ -139,6 +140,32 @@ mod ads {
             };
             arr.span()
         }
+
+        fn dummy_ads(ref self: ContractState) -> () {
+            let nftabu = IRegistrationDispatcher {
+                contract_address: self.registration_contract_addr.read()
+            };
+            let mut num = 1;
+            loop {
+                if num > 3 {
+                    break;
+                }
+                let apt_info = nftabu.get_info(id: num);
+                let ad_info = AdInfo {
+                    asset_id: AssetId::Apartment(num),
+                    asset: AssetInfo::Apartment(apt_info),
+                    is_sale: true,
+                    price: 100,
+                    publication_date: 5,
+                    entry_date: 7,
+                    description: "This is a dummy ad",
+                    picture_url: "https://dummyurl.com",
+                };
+                self.ads.write(num, Option::Some(ad_info));
+            };
+            self.next_id.write(num);
+        }
+    
     }
 
     fn get_apartment_info(
@@ -153,30 +180,6 @@ mod ads {
         get_apartment_info(apartment_id, contract_address).owner
     }
 
-    fn dummy_ads(ref self: ContractState) -> () {
-        let nftabu = IRegistrationDispatcher {
-            contract_address: self.registration_contract_addr.read()
-        };
-        let mut num = 1;
-        loop {
-            if num > 3 {
-                break;
-            }
-            let apt_info = nftabu.get_info(id: num);
-            let ad_info = AdInfo {
-                asset_id: AssetId::Apartment(num),
-                asset: AssetInfo::Apartment(apt_info),
-                is_sale: true,
-                price: 100,
-                publication_date: 5,
-                entry_date: 7,
-                description: "This is a dummy ad",
-                picture_url: "https://dummyurl.com",
-            };
-            self.ads.write(num, Option::Some(ad_info));
-        };
-        self.next_id.write(num);
-    }
 
     #[generate_trait]
     impl PrivateImpl of PrivateTrait {

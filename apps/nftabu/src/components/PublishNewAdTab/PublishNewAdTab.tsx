@@ -44,18 +44,19 @@ export const PublishNewAdTab = ({
 
   const createNewAd = async () => {
     let apt : Apt = {id: assetId, info : await reg_contract.get_info(assetId)};
-    // let ad_info : Ad = { info: {
-    //   apt: apt_info,
-    //   is_sale: (saleOrLease === "for_sale"),
-    //   price: Number(price),
-    //   description: description,
-    //   phone: phone,
-    //   publication_date: { second: Math.floor(Date.now() / 1000) },
-    //   entry_date: {second: Math.floor(Number(entry_date) / 1000)},
-    //   picture_url: pictureUrl,
-    // } }
+    let ad_info : Ad = { id: ads_contract.get_next_id(),
+     info: {
+      apt: apt,
+      is_sale: (saleOrLease === "for_sale"),
+      price: Number(price),
+      description: description,
+      phone: phone,
+      publication_date: { second: Math.floor(Date.now() / 1000) },
+      entry_date: {second: Math.floor(Number(entry_date) / 1000)},
+      picture_url: pictureUrl,
+    } }
     // ads_contract.publish_ad(ad_info);
-    await ads_contract.populate('publish_ad', [
+    await ads_contract.populate('publish_ad', [ //ad_info]);
       assetId,
       apt.info.owner,
       apt.info.address.town,
@@ -73,7 +74,7 @@ export const PublishNewAdTab = ({
       0,
       0,
       0,
-    ])
+    ]);
     
   };
 
