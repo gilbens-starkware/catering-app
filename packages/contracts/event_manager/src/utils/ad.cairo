@@ -13,4 +13,5 @@ pub struct AdInfo {
     pub publication_date: felt252,
     pub entry_date: felt252,
     pub description: ByteArray,
+    pub picture_url: ByteArray,
 }
