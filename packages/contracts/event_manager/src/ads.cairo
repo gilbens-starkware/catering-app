@@ -173,7 +173,7 @@ mod ads {
                 description: "This is a dummy ad",
                 picture_url: "https://dummyurl.com",
             };
-            self.publish_ad(ad_info);
+            self.ads.write(num, Option::Some(ad_info));
         };
     }
 
