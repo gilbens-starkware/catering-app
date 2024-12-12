@@ -153,6 +153,30 @@ mod ads {
         get_apartment_info(apartment_id, contract_address).owner
     }
 
+    fn dummy_ads(ref self: ContractState) -> () {
+        let mut num = 1;
+        loop {
+            if num > 3 {
+                break;
+            }
+            let apt_info = IRegistrationDispatcher {
+                contract_address: self.registration_contract_addr.read()
+            }
+                .get_info(id: num);
+            let ad_info = AdInfo {
+                asset_id: AssetId::Apartment(num),
+                asset: AssetInfo::Apartment(apt_info),
+                is_sale: true,
+                price: 100,
+                publication_date: 5,
+                entry_date: 7,
+                description: "This is a dummy ad",
+                picture_url: "https://dummyurl.com",
+            };
+            self.publish_ad(ad_info);
+        };
+    }
+
     #[generate_trait]
     impl PrivateImpl of PrivateTrait {
         fn next_id(ref self: ContractState) -> AdId {
