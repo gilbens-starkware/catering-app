@@ -174,8 +174,8 @@ mod ads {
                 picture_url: "https://dummyurl.com",
             };
             self.ads.write(num, Option::Some(ad_info));
-            self.next_id.write(4);
         };
+        self.next_id.write(num);
     }
 
     #[generate_trait]
