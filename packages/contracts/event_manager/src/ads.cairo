@@ -111,6 +111,17 @@ mod ads {
         fn get_next_id(self: @ContractState) -> u128 {
             self.next_id.read()
         }
+        // Propogation from registration contract
+        fn offer_sale(
+            ref self: ContractState, apartment_id: ApartmentId, buyer: ContractAddress, price: u128
+        ) {
+            IRegistrationDispatcher { contract_address: self.registration_contract_addr.read() }
+                .offer_sale(apartment_id, buyer, price)
+        }
+        fn buy(ref self: ContractState, apartment_id: ApartmentId, price: u128) {
+            IRegistrationDispatcher { contract_address: self.registration_contract_addr.read() }
+                .buy(apartment_id, price)
+        }
     }
 
     fn get_apartment_info(
