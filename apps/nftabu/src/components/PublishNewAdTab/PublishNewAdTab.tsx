@@ -11,22 +11,74 @@ import { StatsCard } from '../StatsCard/StatsCard';
 import { getCurrentDate, groupAdsByMonth } from '../../utils/date';
 import { useMonthlyStats } from '../../hooks/useMonthlyStats';
 import { EmptyStatsCard } from '../StatsCard/EmptyStatsCard';
+import { Apt } from '../../types/apt';
 import { Ad } from '../../types/ad';
+import { useContract } from '@starknet-react/core';
+import { ADS_ABI, ADS_CONTRACT_ADDRESS } from '../../utils/ads_abi';
+import { REG_ABI, REG_CONTRACT_ADDRESS } from '../../utils/registration_abi';
 
-const { month: currentMonth, year: currentYear } = getCurrentDate();
+// const { month: currentMonth, year: currentYear } = getCurrentDate();
 
 export const PublishNewAdTab = ({
   setActiveTab,
 }: {
   setActiveTab: React.Dispatch<React.SetStateAction<string>>;
 }) => {
+  const { contract: ads_contract } = useContract({
+    abi: ADS_ABI,
+    address: ADS_CONTRACT_ADDRESS,
+  });
+
+  const { contract: reg_contract } = useContract({
+    abi: REG_ABI,
+    address: REG_CONTRACT_ADDRESS,
+  });
 
   const [assetId, setAssetId] = useState("");
   const [price, setPrice] = useState("");   
   const [description, setDescription] = useState("");   
+  const [pictureUrl, setPictureUrl] = useState("");
   const [phone, setPhone] = useState("");   
   const [saleOrLease, setSaleOrLease] = useState("for_sale");   
   const [entry_date, setEntryDate] = useState("");   
+
+  const createNewAd = async () => {
+    let apt : Apt = {id: assetId, info : await reg_contract.get_info(assetId)};
+    // let ad_info : Ad = { info: {
+    //   apt: apt_info,
+    //   is_sale: (saleOrLease === "for_sale"),
+    //   price: Number(price),
+    //   description: description,
+    //   phone: phone,
+    //   publication_date: { second: Math.floor(Date.now() / 1000) },
+    //   entry_date: {second: Math.floor(Number(entry_date) / 1000)},
+    //   picture_url: pictureUrl,
+    // } }
+    // ads_contract.publish_ad(ad_info);
+    await ads_contract.populate('publish_ad', [
+      assetId,
+      apt.info.owner,
+      apt.info.address.town,
+      apt.info.address.street,
+      apt.info.address.number,
+      apt.info.area,
+      apt.info.floor,
+      saleOrLease === "for_sale", // is_sale
+      Number(price),
+      Math.floor(Date.now() / 1000), // publication_date
+      Math.floor(Number(entry_date) / 1000), // entry_date
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+    ])
+    
+  };
+
+
+  
   return (
     <>
         <h2 className="text-2xl font-bold">Publish a new ad!</h2>
@@ -54,9 +106,17 @@ export const PublishNewAdTab = ({
             cols={100}
             style={{ padding: "4px"}}
             placeholder="One closet apartment in the middle of Tel Aviv"
+        /><br />
+        Picture url: &nbsp;  <input
+            type="text"
+            id="pictureUrl"
+            value={pictureUrl}
+            onChange={(e) => setPictureUrl(e.target.value)}
+            placeholder="https://static.wikia.nocookie.net/dqw4w9wgxcq/images/6/61/Rickrolling.gif/revision/latest?cb=20220719030942"
+            style={{ width: "800px", padding: "4px"}}
         />
         </div>
-        Contact phone number: &nbsp;  <input
+        Contact phone number: &nbsp; <input
             type="text"
             id="phoneInput"
             value={phone}
@@ -92,7 +152,7 @@ export const PublishNewAdTab = ({
         /><br />
 
         <button
-           // onClick={async () => {await createNewAd();}}
+           onClick={async () => {await createNewAd();}}
            // style = ({width: "150px"})
         >Publish ad!</button>
 

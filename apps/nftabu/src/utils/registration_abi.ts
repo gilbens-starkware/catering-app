@@ -3,10 +3,10 @@ import { Abi } from '@starknet-react/core';
 
 /// The address of the deployed contract.
 export const REG_CONTRACT_ADDRESS =
-  '0x007711c8115cf1757a335f5b8790310e5c0680af4219f44142654d944e6f6da4';
+  '0x006b4a3b4bbd85c37988cb0ff9891b5977fb8005c1545b96fdcf39a22b201043';
 /// The ABI of the deployed contract. Can be found on starkscan.
 /// For the above contract, the ABI can be found at:
-/// https://sepolia.starkscan.co/contract/0x007711c8115cf1757a335f5b8790310e5c0680af4219f44142654d944e6f6da4
+/// https://sepolia.starkscan.co/contract/0x006b4a3b4bbd85c37988cb0ff9891b5977fb8005c1545b96fdcf39a22b201043
 /// And the ABI is accessible under the 'Class Code/History' tab -> 'Copy ABI Code' button.
 export const REG_ABI = [
     {

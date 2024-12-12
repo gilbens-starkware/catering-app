@@ -10,6 +10,6 @@ export type Ad = {
     publication_date: { second: number };
     entry_date: { second: number };
     phone: string;
-    // TODO: add pictures
+    picture_url: string;
   };
 };
