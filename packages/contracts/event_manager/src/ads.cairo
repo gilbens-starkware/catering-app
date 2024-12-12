@@ -154,15 +154,15 @@ mod ads {
     }
 
     fn dummy_ads(ref self: ContractState) -> () {
+        let nftabu = IRegistrationDispatcher {
+            contract_address: self.registration_contract_addr.read()
+        };
         let mut num = 1;
         loop {
             if num > 3 {
                 break;
             }
-            let apt_info = IRegistrationDispatcher {
-                contract_address: self.registration_contract_addr.read()
-            }
-                .get_info(id: num);
+            let apt_info = nftabu.get_info(id: num);
             let ad_info = AdInfo {
                 asset_id: AssetId::Apartment(num),
                 asset: AssetInfo::Apartment(apt_info),
