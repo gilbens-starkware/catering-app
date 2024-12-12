@@ -11,7 +11,7 @@ import { Badge } from '../ui/badge';
 import { Ad } from '../../types/ad';
 import { openFullscreenLoader } from '../FullscreenLoaderModal/FullscreenLoaderModal';
 import { shortString } from "starknet";
-import { ABI, CONTRACT_ADDRESS } from '../../utils/consts';
+import { ADS_ABI, ADS_CONTRACT_ADDRESS } from '../../utils/ads_abi';
 import { useContract, useSendTransaction } from '@starknet-react/core';
 import { useMemo } from 'react';
 import { TypedContractV2 } from 'starknet';

@@ -5,7 +5,7 @@ import {
   getTimestampForFirstDayOfMonth,
 } from '../utils/date';
 import { useAccount, useReadContract } from '@starknet-react/core';
-import { ABI, CONTRACT_ADDRESS } from '@/utils/consts';
+import { ADS_ABI, ADS_CONTRACT_ADDRESS } from '../../utils/ads_abi';
 
 const aYearAgoTimestampSeconds = getTimestampForFirstDayOfMonth(
   getStartMonthOfEventTracking(),

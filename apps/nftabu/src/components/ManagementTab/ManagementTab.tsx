@@ -28,7 +28,7 @@ import { truncateAddress } from '../../utils/string';
 import { exportJSONToCSV } from '../../utils/csv';
 import { ReportEnhancementData, ReportWallet } from '../../types/report';
 import { useContract } from '@starknet-react/core';
-import { ABI, CONTRACT_ADDRESS } from '../../utils/consts';
+import { ADS_ABI, ADS_CONTRACT_ADDRESS } from '../../utils/ads_abi';
 
 const { month: currentMonth, year: currentYear } = getCurrentDate();
 
