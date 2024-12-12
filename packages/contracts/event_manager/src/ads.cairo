@@ -111,6 +111,7 @@ mod ads {
         fn get_next_id(self: @ContractState) -> u128 {
             self.next_id.read()
         }
+
         // Propogation from registration contract
         fn offer_sale(
             ref self: ContractState, apartment_id: ApartmentId, buyer: ContractAddress, price: u128
@@ -118,9 +119,25 @@ mod ads {
             IRegistrationDispatcher { contract_address: self.registration_contract_addr.read() }
                 .offer_sale(apartment_id, buyer, price)
         }
+
         fn buy(ref self: ContractState, apartment_id: ApartmentId, price: u128) {
             IRegistrationDispatcher { contract_address: self.registration_contract_addr.read() }
                 .buy(apartment_id, price)
+        }
+
+        fn get_all_ads(self: @ContractState) -> Span<(AdId, AdInfo)> {
+            let next_id = self.get_next_id();
+            let mut cur_id = 0;
+            let mut arr: Array<(AdId, AdInfo)> = ArrayTrait::new();
+            loop {
+                if cur_id == next_id {
+                    break;
+                }
+                if let Option::Some(ad) = self.ads.read(cur_id) {
+                    arr.append((cur_id, ad));
+                }
+            };
+            arr.span()
         }
     }
 

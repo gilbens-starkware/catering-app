@@ -14,4 +14,6 @@ pub trait IAds<ContractState> {
         ref self: ContractState, apartment_id: ApartmentId, buyer: ContractAddress, price: u128
     );
     fn buy(ref self: ContractState, apartment_id: ApartmentId, price: u128);
+
+    fn get_all_ads(self: @ContractState) -> Span<(AdId, AdInfo)>;
 }
